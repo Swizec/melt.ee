@@ -226,6 +226,7 @@ app.get('/', function(req, res) {
                                     img_src : person.pictureUrl || '',
                                     headline : person.headline || ''
                                 };
+                                return false; //call next step's function
                             } else {
                                 //------------------------------//
                                 // New user, create session
@@ -240,11 +241,7 @@ app.get('/', function(req, res) {
                                 };
 
                                 var is_admin = 0;
-                                if(person.firstName == 'Matej' && person.lastName == 'Golob' && person.headline == 'Business Unit Manager - IBM Software at Interexport d.o.o.') {
-                                    is_admin = 1;
-                                }
-
-                                console.log('Before error...');
+                                
                                 var new_user = User({ linkedin_id : person.id,
                                                       firstName : person.firstName,
                                                       lastName : person.lastName,
@@ -252,18 +249,16 @@ app.get('/', function(req, res) {
                                                       pictureUrl : person.pictureUrl,
                                                       publicUrl : person.publicProfileUrl,
                                                       is_admin : is_admin });
-                                console.log('Trying to save new user...');
+
+                                //Trying to save new user...
                                 new_user.save(function(err) {
                                     if(err) {
                                         console.log('Error saving person...');
-                                    } else {
-                                        //----------------------------------------------//
-                                        // New user welcome page
-                                        //----------------------------------------------//
+                                        console.log(err);
                                     }
+                                    return false; //call next step's function
                                 });
                             }
-                            return false;
                         },
                         function(err) {
                             res.render('main.jade', req.session.user_sess);
@@ -272,27 +267,6 @@ app.get('/', function(req, res) {
                     }
                 }
             );
-
-            /*
-            function show_all(res) {
-                if(g_user_info && g_connections) {
-                    all = _.extend(g_user_info, g_connections);
-                    res.render('main.jade', all);
-                }
-            }
-
-            oa.getProtectedResource(
-                "http://api.linkedin.com/v1/people/~/connections?format=json",
-                "GET",
-                req.session.oauth_access_token,
-                req.session.oauth_access_token_secret,
-                function (error, data, response) {
-                    g_connections = JSON.parse(data);
-                    console.log(g_connections);
-                    show_all(res);
-                }
-            );
-            */
         }
     }
 });
