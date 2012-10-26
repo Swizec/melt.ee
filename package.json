@@ -1,0 +1,22 @@
+{
+  "name": "melt.ee",
+  "version": "0.0.0",
+  "description": "A thing for people to get together at conferences",
+  "main": "server/main_server.js",
+  "dependencies": {
+    "step": "*",
+    "mongoose": "*",
+    "express": "*",
+    "jade": "*",
+    "socket.io": "*"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "swizec@melt.ee:/opt/melt.ee"
+  },
+  "author": "",
+  "license": "BSD"
+}

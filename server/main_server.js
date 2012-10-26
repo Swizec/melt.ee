@@ -4,7 +4,8 @@ var express = require('express'),
     _ = require('underscore')._,
     step = require('step'),
     mongoose = require('mongoose'),
-    db = mongoose.createConnection('localhost', 'meltee');
+    db = mongoose.createConnection('localhost', 'meltee'),
+    settings = require('../settings');
 
 var users_schema;
 var empty_schema;
@@ -47,7 +48,7 @@ app.use(express['static'](__dirname + '/../public'));
 app.use(express.favicon(__dirname + '/../public/img/favicon.ico'));
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
-var server = http.createServer(app).listen(80);
+var server = http.createServer(app).listen(settings.port);
 var io = require('socket.io').listen(server);
 
 
@@ -270,4 +271,4 @@ app.get('/', function(req, res) {
         }
     }
 });
-console.log("listening on http://localhost:80");
+console.log("listening on http://localhost:"+settings.port);
