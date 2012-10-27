@@ -9,4 +9,4 @@ cp def_settings settings.js
 
 Edit settings.js to configure your local settings.
 
-node server/main_server.js
+node app.js
