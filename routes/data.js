@@ -1,22 +1,21 @@
 
 var  _ = require('underscore')._,
     step = require('step'),
-    mongoose = require('mongoose'),
-    db = mongoose.createConnection('localhost', 'meltee');
+    db = require("../lib/db_init");
 
 // Save topics
 exports.save_topics = function(req, res) {
     step(
     function() {
-        if(User && req.session) {
-            User.find({ linkedin_id : req.session.user_sess.id }, this);
+        if(db.User && req.session) {
+            db.User.find({ linkedin_id : req.session.user_sess.id }, this);
         } else {
             return false;
         }
     },
     function(err, result) {
         var post_data = req.body;
-        User.update({ linkedin_id : result[0].linkedin_id },
+        db.User.update({ linkedin_id : result[0].linkedin_id },
                     { '$set' : { topic1 : post_data.topic1,
                                  topic2 : post_data.topic2,
                                  topic3 : post_data.topic3 }
@@ -34,10 +33,10 @@ exports.save_topics = function(req, res) {
 
 // Load topics
 exports.topics = function(req, res) {
-    if(User && req.session.user_sess) {
+    if(db.User && req.session.user_sess) {
         step(
         function() {
-            User.find({ linkedin_id : req.session.user_sess.id }, this);
+            db.User.find({ linkedin_id : req.session.user_sess.id }, this);
         },
         function(err, result) {
             var topics = {};

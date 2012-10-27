@@ -6,9 +6,8 @@
 var OAuth = require('oauth').OAuth,
     _ = require('underscore')._,
     step = require('step'),
-    mongoose = require('mongoose'),
-    db = mongoose.createConnection('localhost', 'meltee'),
-    settings = '../settings';
+    settings = require('../settings'),
+    db = require("../lib/db_init");
 
 exports.data = require('./data');
 
@@ -44,11 +43,11 @@ exports.index = function(req, res) {
                     
                     var person = JSON.parse(data);
                     console.log(person);
-                    if(User) {
+                    if(db.User) {
                         step(
 
                         function() {
-                            User.find({ linkedin_id : person.id }, this);
+                            db.User.find({ linkedin_id : person.id }, this);
                         },
                         
                         function(err, result) {
@@ -81,7 +80,7 @@ exports.index = function(req, res) {
 
                                 var is_admin = 0;
                                 
-                                var new_user = User({ linkedin_id : person.id,
+                                var new_user = db.User({ linkedin_id : person.id,
                                                       firstName : person.firstName,
                                                       lastName : person.lastName,
                                                       headline : person.headline,
@@ -112,7 +111,6 @@ exports.index = function(req, res) {
 
 // Request an OAuth Request Token, and redirects the user to authorize it
 exports.auth = function(req, res) {
-
     var getRequestTokenUrl = "https://api.linkedin.com/uas/oauth/requestToken?scope=r_network";
 
     var oa = new OAuth(getRequestTokenUrl,
@@ -120,8 +118,10 @@ exports.auth = function(req, res) {
                       "qm2c7dg5f6p4",
                       "XbD1qO2THjiWZyrt",
                       "1.0",
-                      settings.domain+"/access_token",
+                      settings.base_url+"/access_token",
                       "HMAC-SHA1");
+
+    console.log(settings);
 
     oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
       if(error) {
@@ -135,7 +135,7 @@ exports.auth = function(req, res) {
             req.session.oauth_token_secret = oauth_token_secret;
 
             // redirect the user to authorize the token
-           res.redirect("https://www.linkedin.com/uas/oauth/authenticate?oauth_token="+oauth_token);
+          res.redirect("https://www.linkedin.com/uas/oauth/authenticate?oauth_token="+oauth_token);
       }
     });
 };
