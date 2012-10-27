@@ -6,7 +6,8 @@ var express = require('express'),
     lessMiddleware = require('less-middleware'),
     mongoose = require('mongoose'),
     db = mongoose.createConnection('localhost', 'meltee'),
-    settings = require('../settings');
+    settings = require('./settings'),
+    routes = require('./routes');
 
 var users_schema;
 var empty_schema;
@@ -43,19 +44,33 @@ var g_user_info, g_connections;
 var app = express();
 
 
-app.use(express.bodyParser());
-app.use(express.cookieParser());
-app.use(express.session({ secret: "whatnot1347" }));
-app.use(lessMiddleware({src: __dirname+'/../public', compress: true}));
-app.use(express['static'](__dirname + '/../public'));
-app.use(express.favicon(__dirname + '/../public/img/favicon.ico'));
-app.set('view engine', 'jade');
-app.set('views', __dirname + '/views');
+app.configure(function(){
+    app.use(express.bodyParser());
+    app.use(express.cookieParser());
+    app.use(express.session({ secret: "whatnot1347" }));
+    app.use(lessMiddleware({src: __dirname+'/public', compress: true}));
+    app.use(express.static(__dirname + '/public'));
+    app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
+    app.set('view engine', 'jade');
+    app.set('views', __dirname + '/views');
+});
+
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('production', function(){
+  app.use(express.errorHandler());
+});
+
 
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
 app.listen(settings.port);
+
+app.get('/', routes.index);
+app.get('/home', routes.home);
 
 // Request an OAuth Request Token, and redirects the user to authorize it
 app.get('/auth', function(req, res) {
