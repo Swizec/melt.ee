@@ -3,6 +3,7 @@ var express = require('express'),
     OAuth = require('oauth').OAuth,
     _ = require('underscore')._,
     step = require('step'),
+    lessMiddleware = require('less-middleware'),
     mongoose = require('mongoose'),
     db = mongoose.createConnection('localhost', 'meltee'),
     settings = require('../settings');
@@ -40,17 +41,21 @@ var g_user_info, g_connections;
 // WEB SERVER
 //------------------------------------------------------------------------------------------------------//
 var app = express();
-//app.use(express.logger());
+
+
 app.use(express.bodyParser());
 app.use(express.cookieParser());
 app.use(express.session({ secret: "whatnot1347" }));
+app.use(lessMiddleware({src: __dirname+'/../public', compress: true}));
 app.use(express['static'](__dirname + '/../public'));
 app.use(express.favicon(__dirname + '/../public/img/favicon.ico'));
 app.set('view engine', 'jade');
 app.set('views', __dirname + '/views');
-var server = http.createServer(app).listen(settings.port);
+
+var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 
+app.listen(settings.port);
 
 // Request an OAuth Request Token, and redirects the user to authorize it
 app.get('/auth', function(req, res) {
@@ -271,4 +276,5 @@ app.get('/', function(req, res) {
         }
     }
 });
+
 console.log("listening on http://localhost:"+settings.port);
