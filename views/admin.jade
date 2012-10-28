@@ -1,0 +1,48 @@
+doctype 5
+html
+  head
+    title Melt.ee
+    meta(charset='utf-8')
+    script(src='/javascripts/jquery-1.8.2.min.js')
+    script(src='/javascripts/underscore-min.js')
+    script(src='/javascripts/backbone-min.js')
+    script(src='/javascripts/admin.js')
+    link(rel='stylesheet', href='/stylesheets/admin.css')
+  body
+    div(id='title_logout')
+      div(id='title') &#x270E; Melt.ee
+      div(id='logout', class='button') Log out
+    div(id='tabs')
+    div(id='data')
+
+  script(type="text/template", id="conference_form")
+    table(id='Conference', class='form')
+      tr
+        th Location
+        td
+          input(name='location')
+      tr
+        th Date
+        td 
+          input(name='date')
+      tr
+        th Time
+        td
+          input(name='type')
+      tr
+        th Description
+        td
+          textarea(name='description')
+      tr
+        th Number of tables
+        td
+          input(name='tables')
+      tr
+        th Active
+        td
+          input(type='checkbox', name='active', class='boolean')
+      tr
+        td
+          div(class='cancel_form button') Cancel
+        td 
+          div(class='save_form button') Save
