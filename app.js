@@ -46,7 +46,7 @@ app.configure(function(){
   app.use(express.session({ secret: "whatnot1347" }));
   app.use(lessMiddleware({src: __dirname+'/public', compress: true}));
   app.use(express['static'](path.join(__dirname, 'public')));
-  app.use(express.favicon(__dirname + '/public/images/favicon.ico'));
+  app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
   app.set('view engine', 'jade');
   app.set('views', __dirname + '/views');
 });
