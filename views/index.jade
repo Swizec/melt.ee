@@ -1,13 +1,17 @@
 extend layout
 
 block content
-  h1
-    span(class='melt_before') http://
-    span(class='melt_left') melt
-    span(class='melt_right') .ee
-  h2 A place to melt new people
+  div.row
+    div.span4.logo
+       img(src='', alt="logo", title="logo")
+       h1 Melt.ee
+       p Connect in person
 
-  h2 Please log in using Linkedin profile:
 
-  a(href='/auth')
-    img(src='/images/sso.png')
+  div.row
+    div.span4
+      p Currently Melt.ee works only for users of Linkedin.
+
+  div.row
+    div.span4
+     a(href='/auth').login_button Log in with LinkedIn
