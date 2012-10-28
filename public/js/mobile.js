@@ -1,5 +1,5 @@
 
-var AppRouter = Backbone.Router.extend({
+var Router = Backbone.Router.extend({
     
     routes: {
         "": "events",
@@ -8,44 +8,47 @@ var AppRouter = Backbone.Router.extend({
         "handshake/:event": "handshake",
         "melt/:event/:person": "melt",
         "thanks": "thanks"
-    },
-
-    events: function () {
-        console.log("events");
-    },
-
-    ready: function () {
-        console.log("ready");
-    },
-
-    waiting: function (event) {
-        console.log("waiting");
-    },
-
-    handshake: function (event) {
-        console.log("handshake");
-    },
-
-    melt: function (event, person) {
-        console.log("melt");
-    },
-
-    thanks: function () {
-        console.log("thanks");
     }
-    
+});
+
+var View = Backbone.View.extend({
+
+    pages: ["events", "ready", "waiting", "handshake", "melt", "thanks"],
+
+    templates: {},
+
+    initialize: function () {
+        this.pages.map(function (route) {
+            this.options.router.on("route:"+route,
+                                   function () {
+                                       this.render(route);
+                                   }, this);
+        }, this);
+
+        this.templates = _.object(this.pages,
+                                  this.pages.map(function (page) {
+                                      return Handlebars.compile($("#template-"+page).html());
+                                  }));
+    },
+
+    render: function (route) {
+        this.$el.html(this.templates[route]());
+    }
+
 });
 
 (function ($) {
 
-    var app = new AppRouter();
+    var router = new Router(),
+        view = new View({router: router,
+                         el: $("div#view")});
 
     Backbone.history.start({pushState: true});
 
     $("a.btn").click(function (event) {
         event.preventDefault();
-        app.navigate($(event.target).attr("href"),
-                    {trigger: true});
+        router.navigate($(event.target).attr("href"),
+                        {trigger: true});
     });
 
 })(jQuery);
