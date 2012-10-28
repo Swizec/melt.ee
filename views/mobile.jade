@@ -22,24 +22,38 @@ block content
         label Which event are you attending right now?
 
         div.hidden-desktop
-          select.span2
+          select
             option Event 1
             option Event 2
 
-          button.btn.span2 Go!
+          div
+            button.btn.btn-primary Go!
 
         div.input-append.hidden-phone
-          select.s
+          select
             option Event 1
             option Event 2
-          div
-            button.btn Go!
+           button.btn.btn-primary Go!
 
 
         hr
 
         label You can view and edit your Three Topics here
         button.btn I love to talk about ...
+
+  div.row
+    div.span4
+      p.lead #{name} are you ready to meet other attendees?
+      button.btn.btn-large.btn-primary Yes melt me!
+
+      hr
+
+  div.row
+    div.span4
+      p There are currently&nbsp;
+        strong 5 people
+        &nbsp;at Event, ready to melt.
+
 
 block scripts
   script(src='/js/mobile.js');
