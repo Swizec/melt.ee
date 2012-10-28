@@ -1,22 +1,13 @@
-doctype 5
-html
-  head
-    title Melt.ee
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible',content='IE=edge,chrome=1')
-    link(rel='stylesheet', href='/stylesheets/main.css')
-    meta(name="viewport",content="width=device-width, initial-scale=1, user-scalable=no")
-  body
-    div(class='top')
-      h1 
-        span(class='melt_before') http:// 
-        span(class='melt_left') melt
-        span(class='melt_right') .ee
-      h2 A place to melt new people
+extend layout
 
-    div(style="padding:15px")
-      div
-        h2 Please log in using Linkedin profile:
-      br
-      a(href='/auth')
-        img(src='/images/sso.png')
+block content
+  h1
+    span(class='melt_before') http://
+    span(class='melt_left') melt
+    span(class='melt_right') .ee
+  h2 A place to melt new people
+
+  h2 Please log in using Linkedin profile:
+
+  a(href='/auth')
+    img(src='/images/sso.png')

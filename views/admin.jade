@@ -1,14 +1,9 @@
-doctype 5
-html
-  head
-    title Melt.ee
-    meta(charset='utf-8')
-    script(src='/javascripts/jquery-1.8.2.min.js')
-    script(src='/javascripts/underscore-min.js')
-    script(src='/javascripts/backbone-min.js')
-    script(src='/javascripts/admin.js')
-    link(rel='stylesheet', href='/stylesheets/admin.css')
-  body
+extend layout
+
+block css
+  link(rel='stylesheet', href='/css/admin.css')
+
+block content
     div(id='title_logout')
       div(id='title') &#x270E; Melt.ee
       div(id='logout', class='button') Log out
@@ -23,7 +18,7 @@ html
           input(name='location')
       tr
         th Date
-        td 
+        td
           input(name='date')
       tr
         th Time
@@ -44,5 +39,8 @@ html
       tr
         td
           div(class='cancel_form button') Cancel
-        td 
+        td
           div(class='save_form button') Save
+
+block scripts
+  script(src='/js/admin.js')
