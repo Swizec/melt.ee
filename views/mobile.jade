@@ -12,56 +12,17 @@ block content
        p Connect in person
        hr
 
-  div.row
-    div.span4
-      p.lead Hi #{name}!
+  include mobile/events.jade
 
-  div.row
-    div.span4
-      form
-        label Which event are you attending right now?
+  include mobile/ready.jade
 
-        div.hidden-desktop
-          select
-            option Event 1
-            option Event 2
+  include mobile/waiting.jade
 
-          div
-            button.btn.btn-primary Go!
+  include mobile/handshake.jade
 
-        div.input-append.hidden-phone
-          select
-            option Event 1
-            option Event 2
-           button.btn.btn-primary Go!
+  include mobile/melt.jade
 
-
-        hr
-
-        div
-          label You can view and edit your Three Topics here
-          button.btn I love to talk about ...
-
-  div.row
-    div.span4
-      p.lead #{name} are you ready to meet other attendees?
-      div.center
-        button.btn.btn-large.btn-primary Yes melt me!
-
-      hr
-
-  div.row
-    div.span4
-      p.center There are currently&nbsp;
-        strong 5 people
-        &nbsp;at Event, ready to melt.
-
-  div.row
-    div.span4.center
-      p.lead Waiting for other user ...
-      div
-        img(src="/img/loader.gif")
-
+  include mobile/thanks.jade
 
 block scripts
   script(src='/js/mobile.js');
