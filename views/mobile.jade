@@ -10,24 +10,27 @@ block content
        img(src='', alt="logo", title="logo")
        h1 Melt.ee
        p Connect in person
+       hr
 
   div.row
     div.span4
-      p Hi #{name}!
-      p Which event are you attending right now?
+      p.lead Hi #{name}!
 
   div.row
     div.span4
-      a.btn.dropdown-toggle.btn-large(data-toggle="dropdown", href="#") Choose event&nbsp;
-        span.caret
-      ul.dropdown-menu
-        li Event 1
-        li Event 2
+      form
+        label Which event are you attending right now?
 
-  div.row
-    div.span4
-      p You can view and edit your Three Topics here
-      button.btn I love to talk about
+        div.input-append
+          select.span2
+            option Event 1
+            option Event 2
+          button.btn Go!
+
+        hr
+
+        label You can view and edit your Three Topics here
+        button.btn I love to talk about ...
 
 block scripts
   script(src='/js/mobile.js');
