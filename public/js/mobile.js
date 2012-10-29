@@ -3,7 +3,7 @@ var Router = Backbone.Router.extend({
     
     routes: {
         "": "events",
-        "ready": "ready",
+        "ready/:event": "ready",
         "waiting/:event": "waiting",
         "handshake/:event": "handshake",
         "melt/:event/:person": "melt",
@@ -11,28 +11,73 @@ var Router = Backbone.Router.extend({
     }
 });
 
+var PageView = Backbone.View.extend({
+    
+    events: {
+        "a.btn": "navigate"
+    },
+
+    render: function () {
+        return this.template();
+    },
+
+    navigate: function (event) {
+        event.preventDefault();
+        alert("BU");
+        this.options.router.navigate($(event.target).attr("href"),
+                                     {trigger: true});
+    }
+
+});
+
+var EventsView = PageView.extend({
+    template: Handlebars.compile($("#template-events").html()),
+
+});
+
+var ReadyView = PageView.extend({
+    template: Handlebars.compile($("#template-ready").html())
+});
+
+var WaitingView = PageView.extend({
+    template: Handlebars.compile($("#template-waiting").html())
+});
+
+var HandshakeView = PageView.extend({
+    template: Handlebars.compile($("#template-handshake").html())
+});
+
+var MeltView = PageView.extend({
+    template: Handlebars.compile($("#template-melt").html())
+});
+
+var ThanksView = PageView.extend({
+    template: Handlebars.compile($("#template-thanks").html())
+});
+
+
 var View = Backbone.View.extend({
 
-    pages: ["events", "ready", "waiting", "handshake", "melt", "thanks"],
-
-    templates: {},
+    pages: {"events": EventsView,
+            "ready": ReadyView,
+            "waiting": WaitingView,
+            "handshake": HandshakeView, 
+            "melt": MeltView,
+            "thanks": ThanksView
+    },
 
     initialize: function () {
-        this.pages.map(function (route) {
+        _.keys(this.pages).map(function (route) {
             this.options.router.on("route:"+route,
                                    function () {
                                        this.render(route);
                                    }, this);
         }, this);
-
-        this.templates = _.object(this.pages,
-                                  this.pages.map(function (page) {
-                                      return Handlebars.compile($("#template-"+page).html());
-                                  }));
     },
 
     render: function (route) {
-        this.$el.html(this.templates[route]());
+        var view = new this.pages[route]();
+        this.$el.html(view.render());
     }
 
 });
@@ -44,11 +89,5 @@ var View = Backbone.View.extend({
                          el: $("div#view")});
 
     Backbone.history.start({pushState: true});
-
-    $("a.btn").click(function (event) {
-        event.preventDefault();
-        router.navigate($(event.target).attr("href"),
-                        {trigger: true});
-    });
 
 })(jQuery);
