@@ -51,7 +51,8 @@ exports.access_token = function(req, res){
                 // store the access token in the session
                 req.session.oauth_access_token = oauth_access_token;
                 req.session.oauth_access_token_secret = oauth_access_token_secret;
-                res.redirect((req.param('action') && req.param('action') !== "") ? req.param('action') : "/");
+                //res.redirect((req.param('action') && req.param('action') !== "") ? req.param('action') : "/");
+                res.redirect('/');
              }
     });
 };
@@ -144,7 +145,12 @@ exports.index = function(req, res){
                             }
                         },
                         function(err) {
-                            res.render('main.jade', req.session.user_sess);
+                            if(req.session.redirect == 'admin') {
+                                delete req.session.redirect;
+                                res.render('admin.jade', req.session.user_sess);
+                            } else {
+                                res.render('main.jade', req.session.user_sess);
+                            }
                         }
                         ); //step
                     }

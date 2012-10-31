@@ -4,11 +4,16 @@ block css
   link(rel='stylesheet', href='/css/admin.css')
 
 block content
-    div(id='title_logout')
-      div(id='title') &#x270E; Melt.ee
-      div(id='logout', class='button') Log out
-    div(id='tabs')
-    div(id='data')
+  div(id='title_logout')
+    div(id='title') &#x270E; Melt.ee
+    div(id='logout', class='btn btn-inverse') Log out
+  div(id='tabs')
+  div(id='data')
+
+  script(type="text/template", id="users_list_row")
+    tr
+      td <%= firstName %> <%= lastName %>
+      td <%= creation_timestamp %>
 
   script(type="text/template", id="conference_form")
     table(id='Conference', class='form')
