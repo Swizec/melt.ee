@@ -2,13 +2,13 @@
 var Router = Backbone.Router.extend({
     
     routes: {
-        "": "events",
-        "topics": "topics",
-        "ready/:event": "ready",
-        "waiting/:event": "waiting",
-        "handshake/:event": "handshake",
-        "melt/:event/:person": "melt",
-        "thanks": "thanks"
+        "mobile": "events",
+        "mobile/topics": "topics",
+        "mobile/ready/:event": "ready",
+        "mobile/waiting/:event": "waiting",
+        "mobile/handshake/:event": "handshake",
+        "mobile/melt/:event/:person": "melt",
+        "mobile/thanks": "thanks"
     }
 });
 
@@ -25,7 +25,7 @@ var PageView = Backbone.View.extend({
 
     __navigate: function (event, href) {
         event.preventDefault();
-        this.options.router.navigate(href || $(event.target).attr("href"),
+        this.options.router.navigate('mobile'+href || 'mobile'+$(event.target).attr("href"),
                                      {trigger: true});
     }
 
