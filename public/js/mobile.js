@@ -3,6 +3,7 @@ var Router = Backbone.Router.extend({
     
     routes: {
         "": "events",
+        "topics": "topics",
         "ready/:event": "ready",
         "waiting/:event": "waiting",
         "handshake/:event": "handshake",
@@ -14,16 +15,16 @@ var Router = Backbone.Router.extend({
 var PageView = Backbone.View.extend({
     
     events: {
-        "a.btn": "navigate"
+        "click a.btn": "navigate"
     },
 
     render: function () {
-        return this.template();
+        this.$el.html(this.template());
+        return this.$el;
     },
 
     navigate: function (event) {
         event.preventDefault();
-        alert("BU");
         this.options.router.navigate($(event.target).attr("href"),
                                      {trigger: true});
     }
@@ -31,7 +32,12 @@ var PageView = Backbone.View.extend({
 });
 
 var EventsView = PageView.extend({
-    template: Handlebars.compile($("#template-events").html()),
+    template: Handlebars.compile($("#template-events").html())
+
+});
+
+var TopicsView = PageView.extend({
+    template: Handlebars.compile($("#template-topics").html())
 
 });
 
@@ -59,6 +65,7 @@ var ThanksView = PageView.extend({
 var View = Backbone.View.extend({
 
     pages: {"events": EventsView,
+            "topics": TopicsView,
             "ready": ReadyView,
             "waiting": WaitingView,
             "handshake": HandshakeView, 
@@ -76,8 +83,9 @@ var View = Backbone.View.extend({
     },
 
     render: function (route) {
-        var view = new this.pages[route]();
-        this.$el.html(view.render());
+        var view = new this.pages[route]({el: this.$el,
+                                          router: this.options.router});
+        view.render();
     }
 
 });
