@@ -15,7 +15,7 @@ var Router = Backbone.Router.extend({
 var PageView = Backbone.View.extend({
     
     events: {
-        "click a.btn": "navigate"
+        "click a.btn": "__navigate"
     },
 
     render: function () {
@@ -23,17 +23,25 @@ var PageView = Backbone.View.extend({
         return this.$el;
     },
 
-    navigate: function (event) {
+    __navigate: function (event, href) {
         event.preventDefault();
-        this.options.router.navigate($(event.target).attr("href"),
+        this.options.router.navigate(href || $(event.target).attr("href"),
                                      {trigger: true});
     }
 
 });
 
 var EventsView = PageView.extend({
-    template: Handlebars.compile($("#template-events").html())
+    template: Handlebars.compile($("#template-events").html()),
 
+    events: {
+        "click a.btn": "navigate"
+    },
+
+    navigate: function (event) {
+        var chosen = $(event.target).siblings("select").val();
+        this.__navigate(event, '/ready/'+chosen);
+    }
 });
 
 var TopicsView = PageView.extend({
@@ -85,6 +93,7 @@ var View = Backbone.View.extend({
     render: function (route) {
         var view = new this.pages[route]({el: this.$el,
                                           router: this.options.router});
+
         view.render();
     }
 
