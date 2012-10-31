@@ -8,7 +8,7 @@
             "mobile/topics": "topics",
             "mobile/ready/:event_id": "ready",
             "mobile/waiting/:event_id": "waiting",
-            "mobile/handshake/:event_id": "handshake",
+            "mobile/handshake/:event_id/:person": "handshake",
             "mobile/melt/:event_id/:person": "melt",
             "mobile/thanks": "thanks"
         }
@@ -42,7 +42,7 @@
         template: Handlebars.compile($("#template-events").html()),
 
         events: {
-            "click a.btn": "navigate"
+            "click a.btn.go": "navigate"
         },
 
         navigate: function (event) {
