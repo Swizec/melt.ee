@@ -51,7 +51,8 @@ exports.access_token = function(req, res){
                 // store the access token in the session
                 req.session.oauth_access_token = oauth_access_token;
                 req.session.oauth_access_token_secret = oauth_access_token_secret;
-                res.redirect((req.param('action') && req.param('action') !== "") ? req.param('action') : "/");
+                //res.redirect((req.param('action') && req.param('action') !== "") ? req.param('action') : "/");
+                res.redirect('/');
              }
     });
 };
@@ -140,9 +141,13 @@ exports.login = function(req, res){
                             }
                         },
                         function(err) {
+                            if (req.session.redirect == 'admin') {
+                                delete req.session.redirect;
+                                return res.redirect('/admin');
+                            }
+
                             res.redirect('/');
-                        }
-                        ); //step
+                        }); //step
                     }
                 }
             );

@@ -1,0 +1,129 @@
+@color : #4072BC;
+
+.container {
+  width: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+div, td, th, input, textarea {
+  font-family: arial;
+  vertical-align: top;
+}
+
+input, textarea {
+  font-size: 16px;
+}
+
+input {
+  padding: 2px 5px;
+}
+
+textarea {
+  padding: 3px 5px;
+}
+
+.form {
+  background: #EEE;
+  padding: 5px;
+}
+
+form .table {
+  display: table;
+}
+
+.form td {
+  padding: 5px;
+}
+
+.form th {
+  text-align: right;
+  padding: 11px 5px;
+  font-size: 15px;
+}
+
+.save_form {
+  background: #000;
+  color: #FFF;
+  padding: 5px;
+  float: right;
+  cursor: pointer;
+}
+
+.cancel_form {
+  background: #999;
+  color: #FFF;
+  padding: 5px;
+  float: left;
+  cursor: pointer;
+}
+
+.boolean {
+  margin: 8px 0;
+}
+
+.top {
+  margin-bottom: 10px;
+  background: lighten(@color, 10%);
+  .tab {
+    float: left;
+    margin: 0 0 0 10px;
+    background: darken(@color, 10%);
+    color: #FFF;
+    padding: 6px 10px;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    font-size: 16px;
+    &:hover { background: darken(@color, 5%); }
+  }
+}
+
+.top:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+#title_logout {
+  background: lighten(@color, 10%);
+  font-size: 30px;
+  color: #FFF;
+}
+
+#title_logout:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+
+#title {
+  margin: 15px 0;
+  background: lighten(@color, 30%);
+  float: left;
+  padding: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  cursor: pointer;
+  font-size: 25px;
+}
+
+#logout {
+  float: right;
+  //background: darken(@color, 10%);
+  margin: 15px;
+  padding: 2px 5px;
+  font-size: 15px;
+  //&:hover { background: darken(@color, 5%); }
+}
+
+.button {
+  cursor: pointer;
+  border-radius: 4px;
+}

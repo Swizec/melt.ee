@@ -1,7 +1,6 @@
 $(function() {
     cl = console.log;     
     function position_buttons() {
-        //$('#ww').val($('body').width());
         $('#logout').css('left', (460 - $('#logout').outerWidth())+'px');
         window.scrollTo(0, window.scrollY);
     }

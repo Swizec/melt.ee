@@ -18,6 +18,7 @@ var route_auth = require('./routes/auth');
 var route_topics = require('./routes/topics');
 var route_API = require('./routes/API');
 var route_mobile = require('./routes/mobile');
+var route_admin = require('./routes/admin');
 
 //-------------------------------------------------------//
 // Load settings
@@ -74,7 +75,7 @@ app.post('/save_topics', route_topics.save_topics);
 //---------------------------------------------------------------//
 // Backend routes (admin CRUD)
 //---------------------------------------------------------------//
-app.get('/admin', function(req, res) { res.render('admin.jade'); });
+app.get('/admin', route_admin);
 
 var route_API = require('./routes/API');
 //---------------------------------------------------------------//
@@ -83,7 +84,7 @@ var route_API = require('./routes/API');
 app.post('/api/:collection', route_API.create);
 app.get('/api/:collection', route_API.read);
 app.put('/api/:collection/:id', route_API.update);
-app.delete('/api/:collection/:id', route_API.remove);
+app['delete']('/api/:collection/:id', route_API.remove);
 
 //------------------------------------------------------------------//
 // Create server
