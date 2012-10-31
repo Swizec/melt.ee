@@ -57,16 +57,12 @@ exports.access_token = function(req, res){
     });
 };
 
-exports.index = function(req, res){
-    if(req.session.user_sess) {
-        // User is logged in, replace jade template with user's session details
-        res.render('main.jade', req.session.user_sess);
-    } else {
+exports.login = function(req, res){
         //--------------------------------------------------------------//
         // No session, user is NOT logged in, show LINKEDin button
         //--------------------------------------------------------------//
         if(!req.session.oauth_access_token) {
-            res.render('index.jade', {});
+            res.render('login.jade', {});
         } else {
             //-------------------------------------------------------------------//
             // User comes from linkedin auth (every time, yes)
@@ -145,19 +141,17 @@ exports.index = function(req, res){
                             }
                         },
                         function(err) {
-                            if(req.session.redirect == 'admin') {
+                            if (req.session.redirect == 'admin') {
                                 delete req.session.redirect;
-                                res.render('admin.jade', req.session.user_sess);
-                            } else {
-                                res.render('main.jade', req.session.user_sess);
+                                return res.redirect('/admin');
                             }
-                        }
-                        ); //step
+
+                            res.redirect('/');
+                        }); //step
                     }
                 }
             );
         }
-    }
 };
 
 exports.logout = function(req, res) {

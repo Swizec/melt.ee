@@ -1,0 +1,28 @@
+extend layout
+
+block css
+  link(rel='stylesheet', href='/css/mobile.css')
+
+
+block content
+  div.row
+    div.span4.logo
+       img(src='', alt="logo", title="logo")
+       h1 Melt.ee
+       p Connect in person
+       hr
+
+  include mobile/events.jade
+
+  include mobile/ready.jade
+
+  include mobile/waiting.jade
+
+  include mobile/handshake.jade
+
+  include mobile/melt.jade
+
+  include mobile/thanks.jade
+
+block scripts
+  script(src='/js/mobile.js');

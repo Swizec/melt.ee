@@ -17,6 +17,7 @@ var fs = require('fs');
 var route_auth = require('./routes/auth');
 var route_topics = require('./routes/topics');
 var route_API = require('./routes/API');
+var route_mobile = require('./routes/mobile');
 var route_admin = require('./routes/admin');
 
 //-------------------------------------------------------//
@@ -46,7 +47,7 @@ app.configure(function(){
   app.use(express.session({ secret: "whatnot1347" }));
   app.use(lessMiddleware({src: __dirname+'/public', compress: true}));
   app.use(express['static'](path.join(__dirname, 'public')));
-  app.use(express.favicon(__dirname + '/public/images/favicon.ico'));
+  app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
   app.set('view engine', 'jade');
   app.set('views', __dirname + '/views');
 });
@@ -62,10 +63,12 @@ app.configure('production', function(){
 //---------------------------------------------------------------//
 // Frontend routes (mobile mostly)
 //---------------------------------------------------------------//
-app.get('/', route_auth.index);
+app.get('/', route_mobile.index);
+app.get('/login', route_auth.login);
 app.get('/auth', route_auth.auth);
 app.get('/access_token', route_auth.access_token);
 app.get('/logout', route_auth.logout);
+
 app.get('/topics.js', route_topics.get_topics);
 app.post('/save_topics', route_topics.save_topics);
 

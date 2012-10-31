@@ -1,0 +1,18 @@
+extend layout
+
+block content
+  div.row
+    div.span4.logo
+       img(src='', alt="logo", title="logo")
+       h1 Melt.ee
+       p Connect in person
+       hr
+
+
+  div.row
+    div.span4
+      p Currently Melt.ee works only for users of Linkedin.
+
+  div.row
+    div.span4
+     a(href='/auth').login_button Log in with LinkedIn
