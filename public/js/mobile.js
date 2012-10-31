@@ -8,6 +8,7 @@
             "mobile/topics": "topics",
             "mobile/ready/:event_id": "ready",
             "mobile/waiting/:event_id": "waiting",
+            "mobile/waiting/:event_id/:person": "waiting",
             "mobile/handshake/:event_id/:person": "handshake",
             "mobile/melt/:event_id/:person": "melt",
             "mobile/thanks": "thanks"
@@ -61,7 +62,12 @@
     });
 
     var WaitingView = PageView.extend({
-        template: Handlebars.compile($("#template-waiting").html())
+        template: Handlebars.compile($("#template-waiting").html()),
+
+        render: function () {
+            this.$el.html(this.template({in_melt: !!this.options.person_id}));
+            return this.$el;
+        }
     });
 
     var HandshakeView = PageView.extend({
