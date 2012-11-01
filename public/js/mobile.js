@@ -8,7 +8,8 @@ var Topics = Backbone.Collection.extend({
 
     save: function () {
         this.models.map(function (item) {
-            if (item.hasChanged()) {
+            if (item.get("changed")) {
+                console.log(item);
                 item.save();
             }
         });
@@ -80,31 +81,50 @@ var Topics = Backbone.Collection.extend({
             "submit form": "save"
         },
 
+        subviews: [],
+
         initialize: function () {
             var topics = this.topics = new Topics();
             topics.fetch();
             topics.on("reset", this.fill_topics, this);
         },
 
-        render: function () {
-            this.__render();
-
-            this.topics.save();
-        },
-
         save: function (event) {
             event.preventDefault();
+            this.topics.save();
         },
 
         fill_topics: function () {
             var $inputs = this.$el.find("input"),
                 i = 0;
             
-            this.topics.each(function (topic) {
-                $inputs.slice(i++).val(topic.get("topic"));
-            });
+            this.topics.map(function (topic) {
+                var view = new TopicInputView({el: $($inputs[i++]),
+                                               model: topic});
+                view.render();
+                this.subviews.push(view);
+            }, this);
         }
 
+    });
+
+    var TopicInputView = Backbone.View.extend({
+        events: {
+            "change": "update"
+        },
+
+        initialize: function () {
+            this.model.on("change", this.render, this);
+        },
+
+        render: function () {
+            this.$el.val(this.model.get("topic"));
+        },
+
+        update: function () {
+            this.model.set("topic", this.$el.val());
+            this.model.set("changed", true);
+        }
     });
 
     var ReadyView = PageView.extend({
