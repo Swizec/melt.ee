@@ -10,7 +10,9 @@ var Topics = Backbone.Collection.extend({
         this.models.map(function (item) {
             if (item.get("changed")) {
                 console.log(item);
-                item.save();
+                item.save(
+                         {success: function () {console.log("YAY")},
+                          error: function () {console.log("NO")}});
             }
         });
     }

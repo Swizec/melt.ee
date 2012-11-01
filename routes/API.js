@@ -54,8 +54,24 @@ exports.my_topics = function (req, res) {
     my_data(user, function (err, result) {
         result = result[0];
 
-        res.send([{topic: result.topic1}, 
-                  {topic: result.topic2}, 
-                  {topic: result.topic3}]);
+        res.send([{topic: result.topic1, id: 1}, 
+                  {topic: result.topic2, id: 2}, 
+                  {topic: result.topic3, id: 3}]);
+    });
+};
+
+exports.save_my_topics = function (req, res) {
+    var user = req.session.user_sess.id; 
+
+    // TODO: make sure posted topic is sane
+
+    my_data(user, function (err, result) {
+        user = result[0];
+
+        user['topic'+req.params.id] = req.body.topic;
+
+        user.save(function () {
+            res.send({});
+        });
     });
 };
