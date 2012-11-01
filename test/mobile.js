@@ -3,8 +3,7 @@ var chai = require('chai'),
     mocha = require('mocha'),
     should = chai.should();
 
-var request = require('supertest'),
-    superagent = require('superagent');
+var request = require('supertest');
 
 var app = require('../app').app;
 
