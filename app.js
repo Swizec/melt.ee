@@ -88,7 +88,7 @@ var route_API = require('./routes/API');
 // a few helper api's
 app.get('/api/me', route_API.me);
 app.get('/api/my_topics', route_API.my_topics);
-app.put('/api/my_topics/:id', route_API.save_my_topics);
+app.put('/api/my_topics/:id', route_API.save_my_topic);
 
 
 app.post('/api/:collection', route_API.create);

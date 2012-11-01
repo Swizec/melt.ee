@@ -60,7 +60,7 @@ exports.my_topics = function (req, res) {
     });
 };
 
-exports.save_my_topics = function (req, res) {
+exports.save_my_topic = function (req, res) {
     var user = req.session.user_sess.id; 
 
     // TODO: make sure posted topic is sane
