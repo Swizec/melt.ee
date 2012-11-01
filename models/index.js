@@ -12,6 +12,16 @@ var users_schema = new mongoose.Schema({
     topic3 : String,
     is_admin : { 'type' : Boolean, 'default' : 0 }
 });
+
+var conference_schema = new mongoose.Schema({
+    location : String,
+    date_time : { 'type' : Date },
+    description : String,
+    spots : String,
+    active : Boolean
+});
+
 db.once('open', function() {
-    exports.User = db.model('linkedin_users', users_schema);
+    exports.linkedin_users = db.model('linkedin_users', users_schema);
+    exports.conferences = db.model('conferences', conference_schema);
 });

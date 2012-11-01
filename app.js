@@ -2,7 +2,7 @@
 // Dependencies
 //-------------------------------------------------------//
 var express = require('express');
-var http = require('http');
+//var http = require('http');
 var lessMiddleware = require('less-middleware');
 var path = require('path');
 var _ = require('underscore')._;
@@ -10,6 +10,7 @@ var step = require('step');
 var mongoose = require('mongoose');
 var db = mongoose.createConnection('localhost', 'meltee');
 var fs = require('fs');
+var io;
 
 //-------------------------------------------------------//
 // Route dependencies
@@ -89,6 +90,6 @@ app['delete']('/api/:collection/:id', route_API.remove);
 //------------------------------------------------------------------//
 // Create server
 //------------------------------------------------------------------//
-http.createServer(app).listen(settings.port, function(err){
-  console.log("Express server listening on port " + settings.port);
-});
+var server = app.listen(settings.port);
+var io = require('socket.io').listen(server);
+console.log("Express server listening on port " + settings.port);

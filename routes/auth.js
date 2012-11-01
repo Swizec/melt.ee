@@ -85,11 +85,11 @@ exports.login = function(req, res){
                     
                     var person = JSON.parse(data);
 
-                    if(models.User) {
+                    if(models.linkedin_users) {
                         step(
 
                         function() {
-                            models.User.find({ linkedin_id : person.id }, this);
+                            models.linkedin_users.find({ linkedin_id : person.id }, this);
                         },
                         
                         function(err, result) {
@@ -122,13 +122,13 @@ exports.login = function(req, res){
 
                                 var is_admin = 0;
                                 
-                                var new_user = User({ linkedin_id : person.id,
-                                                      firstName : person.firstName,
-                                                      lastName : person.lastName,
-                                                      headline : person.headline,
-                                                      pictureUrl : person.pictureUrl,
-                                                      publicUrl : person.publicProfileUrl,
-                                                      is_admin : is_admin });
+                                var new_user = models.linkedin_users({ linkedin_id : person.id,
+                                                             firstName : person.firstName,
+                                                             lastName : person.lastName,
+                                                             headline : person.headline,
+                                                             pictureUrl : person.pictureUrl,
+                                                             publicUrl : person.publicProfileUrl,
+                                                             is_admin : is_admin });
 
                                 //Trying to save new user...
                                 new_user.save(function(err) {

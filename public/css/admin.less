@@ -9,25 +9,21 @@ body {
 }
 
 div, td, th, input, textarea {
-  font-family: arial;
   vertical-align: top;
 }
 
-input, textarea {
-  font-size: 16px;
-}
-
 input {
-  padding: 2px 5px;
+  padding: 2px 4px;
 }
 
 textarea {
-  padding: 3px 5px;
+  padding: 3px 4px;
 }
 
 .form {
   background: #EEE;
-  padding: 5px;
+  margin: 0px 10px 20px 10px;
+  border: 10px solid #EEE;
 }
 
 form .table {
@@ -40,28 +36,24 @@ form .table {
 
 .form th {
   text-align: right;
-  padding: 11px 5px;
+  padding: 9px 7px;
   font-size: 15px;
 }
 
 .save_form {
-  background: #000;
-  color: #FFF;
-  padding: 5px;
+  padding: 4px 7px;
   float: right;
   cursor: pointer;
 }
 
 .cancel_form {
-  background: #999;
-  color: #FFF;
-  padding: 5px;
+  padding: 4px 7px;
   float: left;
   cursor: pointer;
 }
 
 .boolean {
-  margin: 8px 0;
+  margin: 8px 0 !important;
 }
 
 .top {
@@ -78,6 +70,11 @@ form .table {
     font-size: 16px;
     &:hover { background: darken(@color, 5%); }
   }
+}
+
+.tab_active {
+  background: #FFF !important;
+  color: @color !important; 
 }
 
 .top:after {
@@ -104,12 +101,10 @@ form .table {
 
 
 #title {
-  margin: 15px 0;
-  background: lighten(@color, 30%);
+  margin: 10px 0;
+  //background: lighten(@color, 30%);
   float: left;
   padding: 10px;
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
   cursor: pointer;
   font-size: 25px;
 }
@@ -118,12 +113,56 @@ form .table {
   float: right;
   //background: darken(@color, 10%);
   margin: 15px;
-  padding: 2px 5px;
-  font-size: 15px;
+  padding: 4px 7px;
   //&:hover { background: darken(@color, 5%); }
 }
 
 .button {
   cursor: pointer;
   border-radius: 4px;
+}
+
+.list_table {
+  margin: 10px;
+}
+
+.list_table th {
+  text-align: left;
+  border-bottom: 1px solid lighten(@color, 20%);
+  border-top: 1px solid lighten(@color, 20%);
+  padding: 5px 7px;
+  margin: 2px;
+  background: lighten(@color, 45%);
+}
+
+.list_table td {
+  //padding: 5px 7px;
+  border-bottom: 1px solid #DDD;
+  line-height: 32px;
+  padding: 3px 7px 0 7px;
+}
+
+.user_photo {
+  padding: 2px !important;
+}
+
+.user_photo img {
+  height: 32px;
+}
+
+#add_item {
+  margin: 5px 10px;
+  padding: 4px 7px;
+}
+
+.form_title {
+  margin: 5px 15px;
+}
+
+.small_input {
+  width: 80px;
+}
+
+.td_edit {
+  padding: 1px 5px !important;
 }

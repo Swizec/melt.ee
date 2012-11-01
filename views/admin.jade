@@ -2,6 +2,7 @@ extend layout
 
 block css
   link(rel='stylesheet', href='/css/admin.css')
+  link(rel='stylesheet', href='/css/jquery-ui-1.9.1.custom.min.css')
 
 block content
   div(id='title_logout')
@@ -10,42 +11,81 @@ block content
   div(id='tabs')
   div(id='data')
 
-  script(type="text/template", id="users_list_row")
+  script(id="linkedin_users_header", type="text/x-handlebars-template")
     tr
-      td <%= firstName %> <%= lastName %>
-      td <%= creation_timestamp %>
+      th Pic
+      th Name
+      th Headline
+      th First login
+      th Topic 1
+      th Topic 2
+      th Topic 3
+  script(id="linkedin_users_list_row", type="text/x-handlebars-template")
+    td(class="user_photo")
+      a(href="{{ publicUrl }}")
+        img(src="{{ pictureUrl }}")
+    td {{ firstName }} {{ lastName }}
+    td {{ headline }}
+    td {{ creation_timestamp }}
+    td {{ topic1 }}
+    td {{ topic2 }}
+    td {{ topic3 }}
 
-  script(type="text/template", id="conference_form")
-    table(id='Conference', class='form')
+  script(id="conferences_header", type="text/x-handlebars-template")
+    tr
+      th 
+      th Location
+      th Date&time
+      th Description
+      th Spots
+      th Active
+      th
+  script(id="conferences_list_row", type="text/x-handlebars-template")
+    td(class="td_edit")
+      div(class="edit_button btn btn-primary btn-mini") Edit
+    td {{ location }}
+    td {{ date_time }}
+    td {{ description }}
+    td {{ spots }}
+    td {{ active }}
+    td(class="td_edit")
+      div(class="delete_row btn btn-inverse btn-mini") Delete
+
+  script(id="conference_form", type="text/x-handlebars-template")
+    h3(class='form_title') Add conference
+    table(id='conference', class='form')
       tr
         th Location
         td
-          input(name='location')
+          input(name='location',value='Celje')
       tr
         th Date
         td
-          input(name='date')
+          input(name='date', class="small_input")
       tr
         th Time
         td
-          input(name='type')
+          input(name='time', class="small_input")
       tr
         th Description
         td
           textarea(name='description')
       tr
-        th Number of tables
+        th Number of spots
         td
-          input(name='tables')
+          input(name='spots', class="small_input")
       tr
         th Active
         td
-          input(type='checkbox', name='active', class='boolean')
+          input(type='checkbox', name='active', class='boolean', checked='checked')
       tr
         td
-          div(class='cancel_form button') Cancel
+          div(class='cancel_form btn btn-inverse') Cancel
         td
-          div(class='save_form button') Save
+          div(class='save_form btn btn-primary') Save
 
 block scripts
+  script(src='/js/handlebars-min.js')
+  script(src='/js/admin_lib.js')
+  script(src='/js/jquery-ui-1.9.1.custom.min.js')
   script(src='/js/admin.js')
