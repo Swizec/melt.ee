@@ -9,7 +9,10 @@
     "express": "*",
     "jade": "*",
     "socket.io": "*",
-    "less-middleware": "*"
+    "less-middleware": "*",
+    "mocha": "*",
+    "chai": "*",
+    "supertest": "*"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

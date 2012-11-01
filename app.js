@@ -16,7 +16,6 @@ var io;
 // Route dependencies
 //-------------------------------------------------------//
 var route_auth = require('./routes/auth');
-var route_topics = require('./routes/topics');
 var route_API = require('./routes/API');
 var route_mobile = require('./routes/mobile');
 var route_admin = require('./routes/admin');
@@ -40,7 +39,7 @@ global.models = models;
 //---------------------------------------------------------------//
 // Expressjs
 //---------------------------------------------------------------//
-var app = express();
+var app = exports.app = express();
 
 app.configure(function(){
   app.use(express.bodyParser());
@@ -72,15 +71,12 @@ app.get('/auth', route_auth.auth);
 app.get('/access_token', route_auth.access_token);
 app.get('/logout', route_auth.logout);
 
-app.get('/topics.js', route_topics.get_topics);
-app.post('/save_topics', route_topics.save_topics);
-
 //---------------------------------------------------------------//
 // Backend routes (admin CRUD)
 //---------------------------------------------------------------//
 app.get('/admin', route_admin);
 
-var route_API = require('./routes/API');
+
 //---------------------------------------------------------------//
 // API (crud)
 //---------------------------------------------------------------//
@@ -95,10 +91,3 @@ app.post('/api/:collection', route_API.create);
 app.get('/api/:collection', route_API.read);
 app.put('/api/:collection/:id', route_API.update);
 app['delete']('/api/:collection/:id', route_API.remove);
-
-//------------------------------------------------------------------//
-// Create server
-//------------------------------------------------------------------//
-var server = app.listen(settings.port);
-var io = require('socket.io').listen(server);
-console.log("Express server listening on port " + settings.port);
