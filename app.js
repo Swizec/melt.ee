@@ -71,6 +71,9 @@ app.get('/auth', route_auth.auth);
 app.get('/access_token', route_auth.access_token);
 app.get('/logout', route_auth.logout);
 
+// this should only be used for tests
+app.get('/__stub_session', route_auth.stub_session);
+
 //---------------------------------------------------------------//
 // Backend routes (admin CRUD)
 //---------------------------------------------------------------//

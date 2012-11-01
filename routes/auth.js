@@ -159,3 +159,25 @@ exports.logout = function(req, res) {
     delete req.session.user_sess;
     res.redirect('/');
 };
+
+exports.stub_session = function (req, res) {
+    var user_id = req.headers['x-user-id'];
+
+    models.linkedin_users.find({linkedin_id: user_id},
+                               function (err, result) {
+                                   var row = result[0];
+                                   if (!row) {
+                                       return res.send("No user");
+                                   }
+                                   req.session.user_sess = {
+                                       id : row.linkedin_id,
+                                       name : row.firstName +' '+ row.lastName,
+                                       is_admin : 0,
+                                       url : row.publicProfileUrl,
+                                       img_src : row.pictureUrl || '',
+                                       headline : row.headline || ''
+                                   };
+                                   res.send(row);
+                               });
+
+};
