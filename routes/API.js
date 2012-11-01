@@ -34,3 +34,26 @@ exports.update = function(req, res) {
 exports['delete'] = function(req, res) {
     
 };
+
+var my_data = function (user_id, callback) {
+    var API = db.model('linkedin_users', new mongoose.Schema());
+    API.find({linkedin_id: user_id}).execFind(callback);
+};
+
+exports.me = function (req, res) {
+    var user = req.session.user_sess.id;
+
+    my_data(user, function (err, result) {
+        res.send(result);
+    });              
+};
+
+exports.my_topics = function (req, res) {
+    var user = req.session.user_sess.id;
+
+    my_data(user, function (err, result) {
+        result = result[0];
+
+        res.send([result.topic1, result.topic2, result.topic3]);
+    });
+};

@@ -84,6 +84,12 @@ var route_API = require('./routes/API');
 //---------------------------------------------------------------//
 // API (crud)
 //---------------------------------------------------------------//
+
+// a few helper api's
+app.get('/api/me', route_API.me);
+app.get('/api/my_topics', route_API.my_topics);
+
+
 app.post('/api/:collection', route_API.create);
 app.get('/api/:collection', route_API.read);
 app.put('/api/:collection/:id', route_API.update);
