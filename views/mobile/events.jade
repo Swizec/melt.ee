@@ -10,21 +10,21 @@ div.row
 
        div.hidden-desktop
          select
-           option Event 1
-           option Event 2
+           option(value='e1') Event 1
+           option(value='ee2') Event 2
 
          div
-           button.btn.btn-primary Go!
+           a.btn.btn-primary.go(href="/ready") Go!
 
       div.input-append.hidden-phone.hidden-tablet
         select
-          option Event 1
-          option Event 2
-         button.btn.btn-primary Go!
+          option(value='e1') Event 1
+          option(value='ee2') Event 2
+         a.btn.btn-primary.go(href="/ready") Go!
 
 
       hr
 
       div
         label You can view and edit your Three Topics here
-        button.btn I love to talk about ...
+        a.btn(href="/topics") I love to talk about ...

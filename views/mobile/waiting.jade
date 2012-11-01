@@ -1,6 +1,10 @@
 
 div.row
   div.span4.center
-    p.lead Waiting for other user ...
+    {{#if in_melt}}
+    p.lead Waiting for the other user to handshake ...
+    {{else}}
+    p.lead Waiting for another user to be ready ...
+    {{/if}}
     div
       img(src="/img/loader.gif")

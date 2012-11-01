@@ -9,20 +9,33 @@ block content
     div.span4.logo
        img(src='', alt="logo", title="logo")
        h1 Melt.ee
-       p Connect in person
        hr
 
-  include mobile/events.jade
+  div#view
 
-  include mobile/ready.jade
+  script#template-events(type="text/template")
+    include mobile/events.jade
 
-  include mobile/waiting.jade
+  script#template-topics(type="text/template")
+    include mobile/topics.jade
 
-  include mobile/handshake.jade
+  script#template-events(type="text/template")
+    include mobile/ready.jade
 
-  include mobile/melt.jade
+  script#template-ready(type="text/template")
+    include mobile/ready.jade
 
-  include mobile/thanks.jade
+  script#template-waiting(type="text/template")
+    include mobile/waiting.jade
+
+  script#template-handshake(type="text/template")
+    include mobile/handshake.jade
+
+  script#template-melt(type="text/template")
+    include mobile/melt.jade
+
+  script#template-thanks(type="text/template")
+    include mobile/thanks.jade
 
 block scripts
   script(src='/js/mobile.js');
