@@ -54,6 +54,8 @@ exports.my_topics = function (req, res) {
     my_data(user, function (err, result) {
         result = result[0];
 
-        res.send([result.topic1, result.topic2, result.topic3]);
+        res.send([{topic: result.topic1}, 
+                  {topic: result.topic2}, 
+                  {topic: result.topic3}]);
     });
 };

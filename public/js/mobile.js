@@ -1,4 +1,20 @@
 
+var Topic = Backbone.Model.extend({});
+
+var Topics = Backbone.Collection.extend({
+    model: Topic,
+    
+    url: '/api/my_topics',
+
+    save: function () {
+        this.models.map(function (item) {
+            if (item.hasChanged()) {
+                item.save();
+            }
+        });
+    }
+});
+
 (function ($) {
 
     var Router = Backbone.Router.extend({
@@ -22,6 +38,10 @@
         },
 
         render: function () {
+            return this.__render();
+        },
+
+        __render: function () {
             this.$el.html(this.template(this.options));
             return this.$el;
         },
@@ -32,7 +52,7 @@
             if (!href) {
                 href = $(event.target).attr("href");
             }
-            
+
             this.options.router.navigate('mobile'+href,
                                          {trigger: true});
         }
@@ -43,6 +63,7 @@
         template: Handlebars.compile($("#template-events").html()),
 
         events: {
+            "click a.btn.topics": "__navigate",
             "click a.btn.go": "navigate"
         },
 
@@ -53,7 +74,36 @@
     });
 
     var TopicsView = PageView.extend({
-        template: Handlebars.compile($("#template-topics").html())
+        template: Handlebars.compile($("#template-topics").html()),
+
+        events: {
+            "submit form": "save"
+        },
+
+        initialize: function () {
+            var topics = this.topics = new Topics();
+            topics.fetch();
+            topics.on("reset", this.fill_topics, this);
+        },
+
+        render: function () {
+            this.__render();
+
+            this.topics.save();
+        },
+
+        save: function (event) {
+            event.preventDefault();
+        },
+
+        fill_topics: function () {
+            var $inputs = this.$el.find("input"),
+                i = 0;
+            
+            this.topics.each(function (topic) {
+                $inputs.slice(i++).val(topic.get("topic"));
+            });
+        }
 
     });
 
