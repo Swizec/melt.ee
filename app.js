@@ -95,11 +95,11 @@ app.get('/api/me', requireLogin, route_API.me);
 app.get('/api/my_topics', requireLogin, route_API.my_topics);
 app.put('/api/my_topics/:id', requireLogin, route_API.save_my_topic);
 
-
 app.post('/api/:collection', requireLogin, route_API.create);
 app.get('/api/:collection', requireLogin, route_API.read);
 app.put('/api/:collection/:id', requireLogin, route_API.update);
-app.delete('/api/:collection/:id', requireLogin, route_API.remove);
+app.delete('/api/:collection/:id', requireLogin, route_API.delete);
+
 //------------------------------------------------------------------//
 // Create server
 //------------------------------------------------------------------//
