@@ -22,7 +22,7 @@ var stub_session = function (callback) {
                 callback(res.header['set-cookie']);
             });
     });
-    }, 100);
+    }, 500);
 };
 
 describe('Helper APIs', function () {
@@ -75,7 +75,7 @@ describe('Helper APIs', function () {
                 .expect(200)
                 .end(function(err, res) {
                     var topic = res.body[0];
-                    topic.topic = "CHANGED VERY MUCH";
+                    topic.topic =  new Date().getTime()+"";
 
                     request(app)
                         .put('/api/my_topics/'+topic.id)
@@ -92,7 +92,7 @@ describe('Helper APIs', function () {
 
                                     res.body.map(function (_topic) {
                                         if (_topic.id == topic.id) {
-                                            _topic.topic.should.equal('CHANGED VERY MUCH');
+                                            _topic.topic.should.equal(topic.topic);
                                         }
                                     });
 
@@ -101,6 +101,12 @@ describe('Helper APIs', function () {
                         });
                 });
         });
+    });
+
+    it('requires login', function (done) {
+        request(app)
+            .get('/api/my_topics')
+            .expect(401, done);
     });
 
 });
