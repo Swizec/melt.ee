@@ -37,6 +37,11 @@ var route_admin = require('./routes/admin');
 var models = require('./models');
 global.models = models;
 
+//-------------------------------------------------------//
+// Middleware
+//-------------------------------------------------------//
+var requireLogin = require('./middlewares/requireLogin').requireLogin;
+
 //---------------------------------------------------------------//
 // Expressjs
 //---------------------------------------------------------------//
@@ -72,6 +77,9 @@ app.get('/auth', route_auth.auth);
 app.get('/access_token', route_auth.access_token);
 app.get('/logout', route_auth.logout);
 
+// this should only be used for tests
+app.get('/__stub_session', route_auth.stub_session);
+
 //---------------------------------------------------------------//
 // Backend routes (admin CRUD)
 //---------------------------------------------------------------//
@@ -83,7 +91,6 @@ app.get('/admin', route_admin);
 //---------------------------------------------------------------//
 
 // a few helper api's
-
 app.get('/api/me', route_API.me);
 app.get('/api/my_topics', route_API.my_topics);
 app.put('/api/my_topics/:id', route_API.save_my_topic);

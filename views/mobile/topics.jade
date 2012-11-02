@@ -6,14 +6,19 @@ div.row
 div.row
   div.span4
     form
-      label I love to talk about ...
-      input.input-large(type="text")
+      div.control-group
+        label I love to talk about ...
+        input.input-large(type="text")
 
-      label I also love to talk about ...
-      input.input-large(type="text")
+      div.control-group
+        label I also love to talk about ...
+        input.input-large(type="text")
 
-      label and about ...
-      input.input-large(type="text")
+      div.control-group
+        label and about ...
+        input.input-large(type="text")
 
-      div
-        button.btn.btn-primary(type="submit") Save
+      div.control-group
+         a.btn(href="/") Back
+         &nbsp;
+         button.btn.btn-primary(type="submit") Save
