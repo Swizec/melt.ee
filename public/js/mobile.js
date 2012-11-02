@@ -9,10 +9,9 @@ var Topics = Backbone.Collection.extend({
     save: function () {
         this.models.map(function (item) {
             if (item.get("changed")) {
-                console.log(item);
-                item.save(
-                         {success: function () {console.log("YAY")},
-                          error: function () {console.log("NO")}});
+                item.save({},
+                         {success: function () {item.trigger("saved");},
+                          error: function () {item.trigger("error");}});
             }
         });
     }
@@ -117,6 +116,8 @@ var Topics = Backbone.Collection.extend({
 
         initialize: function () {
             this.model.on("change", this.render, this);
+            this.model.on("error", this.error, this);
+            this.model.on("saved", this.success, this);
         },
 
         render: function () {
@@ -124,8 +125,23 @@ var Topics = Backbone.Collection.extend({
         },
 
         update: function () {
+            this.clean();
             this.model.set("topic", this.$el.val());
             this.model.set("changed", true);
+        },
+
+        error: function () {
+            this.clean();
+            this.$el.parent().addClass("error");
+        },
+
+        success: function () {
+            this.clean();
+            this.$el.parent().addClass("success");
+        },
+
+        clean: function () {
+            this.$el.parent().removeClass("success").removeClass("error");
         }
     });
 
