@@ -85,6 +85,8 @@ exports.login = function(req, res){
                     
                     var person = JSON.parse(data);
 
+                    //console.log('person: ===============>'); console.log(person);
+
                     if(models.linkedin_users) {
                         step(
 
@@ -130,6 +132,7 @@ exports.login = function(req, res){
                                                              publicUrl : person.publicProfileUrl,
                                                              is_admin : is_admin });
 
+                                console.log('Trying to save new user...');
                                 //Trying to save new user...
                                 new_user.save(function(err) {
                                     if(err) {

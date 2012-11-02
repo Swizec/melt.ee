@@ -1,5 +1,7 @@
 $(function() {
     var cl = console.log;
+    var api_str = '\/api\/';
+    var test = '100';
 
     Backbone.sync = function(method, model, options) {
         if(method == 'create' && model.url) {
@@ -9,8 +11,8 @@ $(function() {
                      data : tmp,
                      type : 'POST',
                      success : function(resp) {
-                        var i = new Instance(resp);
-                        Items.add(i);
+                        console.log(resp);
+                        options.success(resp);
                      }
             });
         }
@@ -24,28 +26,58 @@ $(function() {
         }
     };
 
-    var main_tabs = {
-        linkedin_users : 'Users',
-        conferences : 'Conferences',
-        attending : 'Attending',
-        melts : 'Melts'
-    };
+    //------------------------------------------------------------------------//
+    // Model && Collections
+    //------------------------------------------------------------------------//
+    
+    var Instance = Backbone.Model.extend({
+        idAttribute: "_id",
+        parse : function(data) {
+            console.log(data);
+            var x = new Instance(data);
+            Items.add(x);
+        }
+    });
+
+//    var Instance = Backbone.Model.extend();
+
+    var InstanceCollection = Backbone.Collection.extend({
+        model : Instance,
+        parse : function(data) {
+            var that = this;
+            setTimeout(function() {
+                _.each(data, function(json) {
+                    var inst = new Instance(json);
+                    that.add(inst);
+                });
+            }, 0);
+        }
+    });
+
+    var Items = new InstanceCollection;
+
+    var TabsM = Backbone.Model.extend();
+    var TabsC = Backbone.Collection.extend({ model : TabsM });
+    var Tabs = new TabsC();
+
+    //------------------------------------------------------------------------------------------//
+    // Top navigation
+    //------------------------------------------------------------------------------------------//
 
     var TabView = Backbone.View.extend({
         className : 'tab',
-        render : function(txt, url) {
-            this.url = url;
-            this.$el.html(txt);
+        render : function() {
+            this.$el.html(this.model.toJSON().txt);
             return this;
         },
         events : { 'click' : 'show_list' },
         show_list : function() {
-            Items = new InstanceCollection();
-            Items.url = '/api/'+this.url;
+            Items.reset();
+            Items.url = '/api/'+this.model.toJSON().url;
 
-            var list = new ListView();
+            var list = new ListView({ model : this.model });
             $('#data').html('');
-            $('#data').append(list.render(this.url).el);
+            $('#data').append(list.render().el);
             Items.fetch();
             $('.tab').removeClass('tab_active');
             this.$el.addClass('tab_active');
@@ -55,37 +87,43 @@ $(function() {
     var TopView = Backbone.View.extend({
         className : 'top',
         initialize : function() {
-            var that = this;
-            _.each(main_tabs, function(v,k) {
-                var tab = new TabView();
-                that.$el.append(tab.render(v,k).el);
-            });
+            Tabs.bind('add', this.addTab, this);
         },
         render : function() {
+            return this;
+        },
+        addTab : function(tab) {
+            var tabV = new TabView({ model : tab });
+            this.$el.append(tabV.render().el);
+        }
+    });
+
+
+    //------------------------------------------------------------------------------------------//
+    // Add button above list
+    //------------------------------------------------------------------------------------------//
+    var AddButton = Backbone.View.extend({
+        id : 'add_item',
+        className : 'btn btn-inverse',
+        render : function() {
+            this.$el.html('Add');
             return this;
         }
     });
 
-    var Instance = Backbone.Model;
 
-    var InstanceCollection = Backbone.Collection.extend({
-        model : Instance,
-        parse : function(data) {
-            var that = this;
-            _.each(data, function(v,k) {
-                v.url = that.url.replace('\/api\/','');
-                Items.add(v);
-            });
-        }
-    });
-
-    var Items;
-
+    //------------------------------------------------------------------------------------------//
+    // FORM
+    //------------------------------------------------------------------------------------------//
     var ConferenceForm = Backbone.View.extend({
         id : 'form',
         tagName : 'form',
         template : $('#conference_form').html(),
-        render : function(model) {
+        events : {
+            "click .cancel_form" : "cancelForm",
+            "click .save_form" : "saveForm"
+        },
+        render : function() {
             this.$el.attr('method', 'post');
             this.$el.append(this.template);
             this.$el.find('[name=date]').datepicker({
@@ -94,11 +132,17 @@ $(function() {
                     firstDay: 1,
                     altFormat: 'yy-mm-dd'
             });
+            var data = this.model.toJSON();
+            if(data.date_time) {
+                var date = new Date(data.date_time);
+                this.$el.find('[name=date]').val(date.format('j.n.Y'));
+                this.$el.find('[name=time]').val(date.format('H:i'));
+            }
+            this.$el.find('[name=location]').val(data.location);
+            this.$el.find('[name=description]').val(data.description);
+            this.$el.find('[name=spots]').val(data.spots);
+            this.$el.find('[name=active]').attr('checked', data.active === true?'checked':false);
             return this;
-        },
-        events : {
-            "click .cancel_form" : "cancelForm",
-            "click .save_form" : "saveForm"
         },
         cancelForm : function() {
             this.$el.hide();
@@ -107,15 +151,20 @@ $(function() {
         },
         saveForm : function() {
             //gather form data
-            var date = $('#form [name=date]').datepicker("getDate").format('Y-m-d');
+            var date_time = '';
+            var date = $('#form [name=date]').datepicker("getDate");
+            date = date?date.format('Y-m-d'):'';
             var x = $('#form [name=time]').val().split(':');
             var h = x[0];
             h = h>9?h:'0'+h;
             var t = x[1]||'00';
+            if(date) {
+                date_time = date+'T'+h+':'+t+':00.000';
+            }
 
             var data = {
                 location : $('#form [name=location]').val(),
-                date_time : date+'T'+h+':'+t+':00.000',
+                date_time : date_time,
                 description : $('#form [name=description]').val(),
                 spots : $('#form [name=spots]').val(),
                 active : $('#form [name=active]').attr('checked')?1:0
@@ -123,103 +172,132 @@ $(function() {
 
             $('#data .list_table').show();
 
-            var inst = new Instance(data);
-            inst.url = Items.url;
+            this.model.set(data);
+            this.model.save();
      
-            //inst.save();
-
             this.$el.hide();
             $('#add_item').show();
         }
     });
 
-    var AddButton = Backbone.View.extend({
-        id : 'add_item',
-
-        className : 'btn btn-inverse',
-        render : function(url) {
-            this.url = url;
-            this.$el.html('Add');
+    //------------------------------------------------------------------------------------------//
+    // LIST
+    //------------------------------------------------------------------------------------------//
+    var ListView = Backbone.View.extend({
+        id : 'list_div',
+        className : 'list_table',
+        initialize : function() {
+            this.url = this.model.toJSON().url;
+            this.$el.append($('<table><tbody /></table>'));
+            Items.on('add', this.onAddItem, this);
+        },
+        events : { 'click #add_item' : 'addItem' },
+        onAddItem : function(item) {
+            var row = new UserRowView({ model : item });
+            this.$el.find('tbody').eq(0).append(row.render().el);
+        },
+        onChange : function() {
+            cl('Changed!');
+        },
+        render : function() {
+            var head = new HeaderRow({ model : this.model }); //passing tab model
+            this.$el.find('tbody').append(head.render().el);
+            if(this.url == 'conferences') {
+                var add_button = new AddButton();
+                this.$el.prepend(add_button.render().el);
+            }
             return this;
         },
-        events : { 'click' : 'editItem' },
-        editItem : function() {
+        addItem : function() {
             $('#data .list_table').hide();
-            this.$el.hide();
+            $('#add_item').hide();
             $('#form').remove();
             if(this.url == 'conferences') {
-                var form = new ConferenceForm();
+                var item = new Instance();
+                item.url = api_str+this.url;
+                var form = new ConferenceForm({ model : item });
                 $('#data').prepend(form.render().el);
                 $('#form [name=location]').focus();
             }
         }
     });
 
-    var ListView = Backbone.View.extend({
-        tagName : 'table',
-        className : 'list_table',
-        initialize : function() {
-            this.url = Items.url.replace('\/api\/','');
-            this.$el.append($('<tbody>'));
-            Items.on('add', this.onAddItem, this);
-        },
-        onAddItem : function(model) {
-            var row = new UserRowView();
-            this.$el.find('tbody').eq(0).append(row.render(model, this.url).el);
-        },
-        onChange : function() {
-            cl('Changed!');
-        },
-        render : function(url) {
-            var head = new HeaderRow();
-            this.$el.find('tbody').append(head.render(url).el);
-            if(url == 'conferences') {
-                var add_button = new AddButton();
-                $('#data').prepend(add_button.render(url).el);
-            }
-            return this;
-        }
-    });
-
     var HeaderRow = Backbone.View.extend({
-        render : function(url) {
-            this.el = $('#'+url+'_header').html();
+        render : function() {
+            this.el = $('#'+this.model.toJSON().url+'_header').html();
             return this;
         }
     });
 
     var UserRowView = Backbone.View.extend({
         tagName : 'tr',
-        render : function(model, url) {
-            this.model = model;
-            var data = model.toJSON();
+        events : { 'click .edit_button' : 'editRow',
+                   'click .delete_row' : 'deleteRow' },
+        render : function() {
+            var furl = this.model.url().split('/')[2];
+            var data = this.model.toJSON();
             var date = new Date(data.creation_timestamp);
             data.creation_timestamp = date.format('j.n. H:i:s');
             if(data.date_time) {
                 var x = new Date(data.date_time);
                 data.date_time = x.format('j.n. H:i');
             }
-            var tmp = Handlebars.compile($('#'+url+'_list_row').html());
+            var tmp = Handlebars.compile($('#'+furl+'_list_row').html());
             this.$el.html(tmp(data));
             return this;
         },
-        events : { 'click .edit_button' : 'editRow' },
         editRow : function() {
-            cl(this.model);
+            $('#data .list_table').hide();
+            $('#add_item').hide();
+            $('#form').remove();
+            var form = new ConferenceForm({ model : this.model });
+            $('#data').prepend(form.render().el);
+        },
+        deleteRow : function() {
+            var that = this;
+            $.ajax({ url : this.model.url(),
+                     type : "DELETE",
+                     success : function(res) {
+                         that.$el.fadeOut(200, function() {
+                            that.$el.remove();
+                         });
+                     }
+            });
         }
     });
 
+
+    var main_tabs = {
+        linkedin_users : 'Users',
+        conferences : 'Conferences',
+        attending : 'Attending',
+        melts : 'Melts'
+    };
+
+    //------------------------------------------------------------------------------------------//
+    // APP VIEW
+    //------------------------------------------------------------------------------------------//
     var AppView = Backbone.View.extend({
         initialize : function() {
             // Show tabs
             var tabs = new TopView();
+
+            _.each(main_tabs, function(v,k) {
+                var tab = new TabsM({ url : k, txt : v });
+                Tabs.add(tab);
+            });
+
             $('#tabs').prepend(tabs.render().el);
 
             // Load user list by triggering first tab
-            $('#tabs .tab').eq(0).trigger('click');
+            $('#tabs .tab').eq(1).trigger('click');
         }
     });
 
     var app = new AppView();
+
+//    setInterval(function() {
+//        cl(Items);
+//    }, 500);
 
 });

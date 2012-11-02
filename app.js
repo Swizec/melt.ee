@@ -13,14 +13,6 @@ var fs = require('fs');
 var io;
 
 //-------------------------------------------------------//
-// Route dependencies
-//-------------------------------------------------------//
-var route_auth = require('./routes/auth');
-var route_API = require('./routes/API');
-var route_mobile = require('./routes/mobile');
-var route_admin = require('./routes/admin');
-
-//-------------------------------------------------------//
 // Load settings
 //-------------------------------------------------------//
 var settings = fs.existsSync('./settings.js')?require('./settings'):require('./def_settings.js');
@@ -34,8 +26,17 @@ global.db = db;
 global.mongoose = mongoose;
 global.settings = settings;
 
+//-------------------------------------------------------//
+// Route dependencies
+//-------------------------------------------------------//
+var route_auth = require('./routes/auth');
+var route_API = require('./routes/API');
+var route_mobile = require('./routes/mobile');
+var route_admin = require('./routes/admin');
+
 var models = require('./models');
 global.models = models;
+
 //---------------------------------------------------------------//
 // Expressjs
 //---------------------------------------------------------------//
@@ -82,12 +83,19 @@ app.get('/admin', route_admin);
 //---------------------------------------------------------------//
 
 // a few helper api's
+
 app.get('/api/me', route_API.me);
 app.get('/api/my_topics', route_API.my_topics);
 app.put('/api/my_topics/:id', route_API.save_my_topic);
 
-
 app.post('/api/:collection', route_API.create);
 app.get('/api/:collection', route_API.read);
 app.put('/api/:collection/:id', route_API.update);
-app['delete']('/api/:collection/:id', route_API.remove);
+app.delete('/api/:collection/:id', route_API.delete);
+
+//------------------------------------------------------------------//
+// Create server
+//------------------------------------------------------------------//
+var server = app.listen(settings.port);
+var io = require('socket.io').listen(server);
+console.log("Express server listening on port " + settings.port);

@@ -4,15 +4,14 @@
 
 // TODO!!! tomorrow, replace all 4 with module.exports (otherwise we have to look for user session in every func below
 // before accessing db)
+var ObjectId = mongoose.Types.ObjectId;
 
 exports.create = function(req, res) {
-    // different models (see /models/index.js)
+    // we have different models for each tab (see /models/index.js)
     var prepare = models[req.params.collection](req.body);
     prepare.save(function(err, result) {
         res.send(result);
     });
-    
-    res.send(req.body);
 };
 
 exports.read = function(req, res) {
@@ -31,8 +30,12 @@ exports.read = function(req, res) {
 exports.update = function(req, res) {
 };
 
-exports['delete'] = function(req, res) {
-    
+exports.delete = function(req, res) {
+    var prepare = models[req.params.collection];
+    console.log(req.params.id);
+    prepare.remove({ '_id' : new ObjectId(req.params.id) }, function() {
+        res.send({ ok : 1 });
+    });
 };
 
 var my_data = function (user_id, callback) {
