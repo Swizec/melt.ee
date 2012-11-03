@@ -11,9 +11,24 @@ a.login_button {
     background-size: 100% auto;
 }
 
+.logo {
+    h1 {
+        text-indent: -100%;
+        background: url("/img/meltee-logo.png") no-repeat;
+        background-size: 100% auto;
+        width: @gridColumnWidth*4;
+        height: @baseLineHeight*2;
+    }
+}
+
 @media (min-width: 1200px) {
     a.login_button {
         width: @gridColumnWidth1200*4;
+    }
+
+    .logo h1 {
+        width: @gridColumnWidth1200*4;
+        height: @baseLineHeight*2.5;
     }
 }
 
@@ -21,20 +36,9 @@ a.login_button {
     a.login_button {
         width: @gridColumnWidth768*4;
     }
-}
 
-div.logo {
-    img {
-        float: right;
-    }
-
-    h1 {
-        margin-bottom: 0;
-        line-height: 36px;
-    }
-
-    p {
-        margin-bottom: 0;
+    .logo h1 {
+        width: @gridColumnWidth768*4;
     }
 }
 
