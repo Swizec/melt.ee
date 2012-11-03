@@ -56,6 +56,7 @@ app.configure(function(){
   app.use(express.favicon(__dirname + '/public/img/favicon.ico'));
   app.set('view engine', 'jade');
   app.set('views', __dirname + '/views');
+  app.locals.pretty = true;
 });
 
 app.configure('development', function(){
