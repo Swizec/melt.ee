@@ -282,6 +282,10 @@ $(function() {
             // Show tabs
             var tabs = new TopView();
 
+            $('#logout').click(function() {
+                document.location = '/logout';
+            });
+
             _.each(main_tabs, function(v,k) {
                 var tab = new TabsM({ url : k, txt : v });
                 Tabs.add(tab);
