@@ -45,3 +45,31 @@ describe('Mobile site', function () {
         });
     });
 });
+
+describe("melting", function () {
+    setTimeout(function () { // give db time to connect
+        var db = models.linkedin_users,
+            user1 = models.linkedin_users({linkedin_id: "test_1",
+                                           firstName: "Oscar",
+                                           lastName: "Wilde"}),
+            user2 = models.linkedin_users({linkedin_id: "test_2",
+                                           firstName: "Lewis",
+                                           lastName: "Carrol"});
+        
+        beforeEach(function (done) {
+            user1.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
+                user1.save(function () {
+                    user2.save(done);
+                });
+            });
+        });
+        
+        describe("waiting in queue", function () {
+            it("adds to queue", function (done) {
+                console.log("BU");
+                done();
+            });
+        });
+        
+    }, 300);
+});

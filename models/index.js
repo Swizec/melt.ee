@@ -24,4 +24,9 @@ var conference_schema = new mongoose.Schema({
 db.once('open', function() {
     exports.linkedin_users = db.model('linkedin_users', users_schema);
     exports.conferences = db.model('conferences', conference_schema);
+    
+    exports.schemas = {
+        user: users_schema,
+        conference: conference_schema
+    };
 });

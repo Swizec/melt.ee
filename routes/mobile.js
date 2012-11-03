@@ -7,3 +7,4 @@ exports.index = function (req, res) {
 
     res.render('mobile.jade', req.session.user_sess);
 };
+
