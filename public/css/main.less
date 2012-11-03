@@ -2,13 +2,25 @@
 @import "bootstrap/bootstrap.less";
 @import "bootstrap/responsive.less";
 
-
 a.login_button {
     text-indent: -100% !important;
-    background: url("/img/linkedin-button-login.png") no-repeat;
-    height: 66px;
-    width: 320px;
     display: inline-block;
+    width: @gridColumnWidth*4;
+    height: @baseLineHeight*3;
+    background: url("/img/linkedin-button-login.png") no-repeat;
+    background-size: 100% auto;
+}
+
+@media (min-width: 1200px) {
+    a.login_button {
+        width: @gridColumnWidth1200*4;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+    a.login_button {
+        width: @gridColumnWidth768*4;
+    }
 }
 
 div.logo {
