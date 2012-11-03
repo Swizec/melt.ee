@@ -100,9 +100,3 @@ app.get('/api/:collection', requireLogin, route_API.read);
 app.put('/api/:collection/:id', requireLogin, route_API.update);
 app.delete('/api/:collection/:id', requireLogin, route_API.delete);
 
-//------------------------------------------------------------------//
-// Create server
-//------------------------------------------------------------------//
-var server = app.listen(settings.port);
-var io = require('socket.io').listen(server);
-console.log("Express server listening on port " + settings.port);
