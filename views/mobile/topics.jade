@@ -1,24 +1,32 @@
 
 div.row
   div.span4
+    {{#if first_time}}
+    p.lead Hi, #{name}! Before we continue, we need 3 topics you love talking about
+    {{else}}
     p.lead You can edit your Three Topics here
+    {{/if}}
 
 div.row
   div.span4
     form
       div.control-group
         label I love to talk about ...
-        input.input-large(type="text")
+        input.input-large(type="text", placeholder="Example: TED, TEDTalks, TEDx events")
 
       div.control-group
         label I also love to talk about ...
-        input.input-large(type="text")
+        input.input-large(type="text", placeholder="Example: Marathon running, first time, Sahara")
 
       div.control-group
         label and about ...
-        input.input-large(type="text")
+        input.input-large(type="text", placeholder="Example: IBM, IBM Software, CEE region")
 
       div.control-group
+         {{#if first_time}}
+         button.btn.btn-primary.btn-large(type="submit") Start
+         {{else}}
          a.btn(href="/") Back
          &nbsp;
-         button.btn.btn-primary(type="submit") Save
+         button.btn.btn-primary(type="submit") Submit
+         {{/if}}

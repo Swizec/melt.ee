@@ -108,12 +108,21 @@ var Events = Backbone.Collection.extend({
         initialize: function () {
             var topics = this.topics = new Topics();
             topics.fetch();
-            topics.on("reset", this.fill_topics, this);
+            topics.on("reset", this.redraw, this);
         },
 
         save: function (event) {
             event.preventDefault();
             this.topics.save();
+        },
+
+        redraw: function () {
+            if (this.topics.all(function (topic) { return topic.get("topic") == ""; })) {
+                this.options.first_time = true;
+                this.render();
+            }
+
+            this.fill_topics();
         },
 
         fill_topics: function () {
