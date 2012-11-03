@@ -1,5 +1,6 @@
 
 var Topic = Backbone.Model.extend({});
+var Event = Backbone.Model.extend({});
 
 var Topics = Backbone.Collection.extend({
     model: Topic,
@@ -15,6 +16,11 @@ var Topics = Backbone.Collection.extend({
             }
         });
     }
+});
+
+var Events = Backbone.Collection.extend({
+    model: Event,
+    url: '/api/conferences'
 });
 
 (function ($) {
@@ -69,9 +75,24 @@ var Topics = Backbone.Collection.extend({
             "click a.btn.go": "navigate"
         },
 
+        initialize: function () {
+            var events = this.Events = new Events();
+            events.fetch();
+            events.on("reset", this.redraw_events, this);
+        },
+
         navigate: function (event) {
-            var chosen = $(event.target).siblings("select").val();
+            var chosen = this.$el.find("select:visible").val();
             this.__navigate(event, '/ready/'+chosen);
+        },
+
+        redraw_events: function () {
+            var template = Handlebars.compile($("#template-events-list").html()),
+                $select = this.$el.find("select:visible").html("");
+
+            this.Events.map(function (item) {
+                $select.append(template(item.toJSON()));
+            });
         }
     });
 

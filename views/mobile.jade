@@ -22,6 +22,9 @@ block content
   script#template-events(type="text/template")
     include mobile/ready.jade
 
+  script#template-events-list(type="text/template")
+    option(value="{{_id}}") {{location}}
+
   script#template-ready(type="text/template")
     include mobile/ready.jade
 
