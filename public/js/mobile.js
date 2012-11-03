@@ -175,6 +175,9 @@ var Events = Backbone.Collection.extend({
 
         render: function () {
             this.$el.html(this.template({in_melt: !!this.options.person_id}));
+
+            this.$el.find("a.btn").attr("href", "/ready/"+this.options.event_id);
+
             return this.$el;
         }
     });

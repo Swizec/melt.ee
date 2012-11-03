@@ -6,5 +6,11 @@ div.row
     {{else}}
     p.lead Waiting for another user to be ready ...
     {{/if}}
-    div
+    p
       img(src="/img/loader.gif")
+
+{{#unless in_melt}}
+div.row
+  div.span4.center.space_top
+    a.btn(href="/ready") I changed my mind
+{{/unless}}
