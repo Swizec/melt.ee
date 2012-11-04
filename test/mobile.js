@@ -99,6 +99,10 @@ describe("melting", function () {
                     });
                 });
             });
+
+            it("counts available melters", function (done) {
+                done();
+            });
         });
         
     }, 300);
