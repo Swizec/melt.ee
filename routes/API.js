@@ -78,3 +78,9 @@ exports.save_my_topic = function (req, res) {
         });
     });
 };
+
+exports.ready_users = function (req, res) {
+    redis.get("ready_users", function (err, count) {
+        res.send({count: parseInt(count, 10)});
+    });
+};

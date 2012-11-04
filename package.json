@@ -14,7 +14,8 @@
     "chai": "*",
     "supertest": "*",
     "superagent": "*",
-    "socket.io-client": "*"
+    "socket.io-client": "*",
+    "redis": "*"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -63,45 +63,69 @@ describe("melting", function () {
             },
             server;
 
+        var client = function () {
+            return io.connect(settings.base_url, options);
+        };
+
         
         beforeEach(function (done) {
             // start server
             server = require('../server').server;
-            db.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
-                user1.save(function () {
-                    user2.save(done);
+            redis.set("ready_users", 0, function () {
+                db.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
+                    user1.save(function () {
+                        user2.save(done);
+                    });
                 });
             });
         });
         
         describe("waiting for melt", function () {
             it("socket.io connectable", function (done) {
-                var client1 = io.connect(settings.base_url, options);    
-                client1.on("connect", function (data) {                    
+                var client1 = client();
+                client1.once("connect", function (data) {                    
                     done();
                 });
             });
 
             it("emits new ready", function (done) {
-                var client1 = io.connect(settings.base_url, options);
-                client1.on("connect", function () {
-                    client1.on("ready", function (user) {
+                var client1 = client();
+                client1.once("connect", function () {
+                    client1.once("ready", function (user) {
                         user.linkedin_id.should.equal("test_2");
                         user.firstName.should.equal("Lewis");
                         user.lastName.should.equal("Carrol");
-
+                        
                         done();
                     });
                     
-                    var client2 = io.connect(settings.base_url, options);
-                    client2.on("connect", function () {
+                    var client2 = client();
+                    client2.once("connect", function () {
                         client2.emit("ready", user2);
                     });
                 });
             });
 
             it("counts available melters", function (done) {
-                done();
+                var client1 = client(), 
+                    client2 = client();
+                client1.once("connect", function () {
+                    client1.once("ready", function () {
+                        request(app)
+                            .get('/api/ready_users')
+                            .expect(200)
+                            .expect('Content-Type', /json/)                            
+                            .end(function (err, result) {
+                                result.body.count.should.equal(2);
+                                
+                                done();
+                            });
+                    });
+
+                    client1.emit("ready", user1);
+                    client2.emit("ready", user2);
+
+                });
             });
         });
         
