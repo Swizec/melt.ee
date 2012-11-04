@@ -27,6 +27,14 @@ exports.read = function(req, res) {
     });
 };
 
+exports.read_one = function (req, res) {
+    var API = db.model(req.params.collection,
+                       new mongoose.Schema());
+    API.findOne({_id: req.params.id}, function (err, result) {
+        res.send(result);
+    });
+};
+
 exports.update = function(req, res) {
 };
 
