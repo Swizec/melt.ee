@@ -117,12 +117,21 @@ var Events = Backbone.Collection.extend({
         initialize: function () {
             var topics = this.topics = new Topics();
             topics.fetch();
-            topics.on("reset", this.fill_topics, this);
+            topics.on("reset", this.redraw, this);
         },
 
         save: function (event) {
             event.preventDefault();
             this.topics.save();
+        },
+
+        redraw: function () {
+            if (this.topics.all(function (topic) { return topic.get("topic") == ""; })) {
+                this.options.first_time = true;
+                this.render();
+            }
+
+            this.fill_topics();
         },
 
         fill_topics: function () {
@@ -207,6 +216,9 @@ var Events = Backbone.Collection.extend({
 
         render: function () {
             this.$el.html(this.template({in_melt: !!this.options.person_id}));
+
+            this.$el.find("a.btn").attr("href", "/ready/"+this.options.event_id);
+
             return this.$el;
         }
     });
