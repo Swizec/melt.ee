@@ -102,6 +102,7 @@ app.get('/api/ready_users', route_API.ready_users);
 
 app.post('/api/:collection', requireLogin, route_API.create);
 app.get('/api/:collection', requireLogin, route_API.read);
+app.get('/api/:collection/:id', requireLogin, route_API.read_one);
 app.put('/api/:collection/:id', requireLogin, route_API.update);
 app.delete('/api/:collection/:id', requireLogin, route_API.delete);
 

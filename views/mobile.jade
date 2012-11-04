@@ -28,6 +28,11 @@ block content
   script#template-ready(type="text/template")
     include mobile/ready.jade
 
+  script#template-ready-meta(type="text/template")
+    p.center There are currently&nbsp;
+      strong {{count}} people
+      &nbsp;at {{event}}, ready to melt.
+
   script#template-waiting(type="text/template")
     include mobile/waiting.jade
 

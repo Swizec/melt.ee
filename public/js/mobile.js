@@ -1,6 +1,13 @@
 
 var Topic = Backbone.Model.extend({});
-var Event = Backbone.Model.extend({});
+var Event = Backbone.Model.extend({
+    url: function () {
+        return '/api/conferences/'+this.attributes._id;
+    }
+});
+var ReadyUsers = Backbone.Model.extend({
+    url: '/api/ready_users'
+});
 
 var Topics = Backbone.Collection.extend({
     model: Topic,
@@ -83,6 +90,8 @@ var Events = Backbone.Collection.extend({
 
         navigate: function (event) {
             var chosen = this.$el.find("select:visible").val();
+            this.options.router.chosenEvent = this.Events.where({_id: chosen})[0];
+
             this.__navigate(event, '/ready/'+chosen);
         },
 
@@ -167,7 +176,30 @@ var Events = Backbone.Collection.extend({
     });
 
     var ReadyView = PageView.extend({
-        template: Handlebars.compile($("#template-ready").html())
+        template: Handlebars.compile($("#template-ready").html()),
+        meta_template: Handlebars.compile($("#template-ready-meta").html()),
+
+        initialize: function () {
+            this.model = new ReadyUsers();
+            this.model.on("change", this.number, this);
+        },
+
+        render: function () {
+            this.model.fetch();
+            this.__render();
+
+            this.render_meta("~");
+        },
+
+        render_meta: function (count) {
+            this.$el.find(".meta").html(
+                this.meta_template({count: count,
+                                    event: this.options.router.chosenEvent.get("location")}));
+        },
+
+        number: function () {
+            this.render_meta(this.model.get("count"));
+        }
     });
 
     var WaitingView = PageView.extend({
@@ -213,6 +245,12 @@ var Events = Backbone.Collection.extend({
         },
 
         render: function (route, ids) {
+            // this needs to be solved more cleanly
+            if (!this.options.router.chosenEvent && ids[0]) {
+                var chosen = this.options.router.chosenEvent = new Event({_id: ids[0]});
+                chosen.fetch();
+            }
+
             var view = new this.pages[route]({el: this.$el,
                                               router: this.options.router,
                                               event_id: ids[0],
