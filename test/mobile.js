@@ -3,9 +3,11 @@ var chai = require('chai'),
     mocha = require('mocha'),
     should = chai.should();
 
-var request = require('supertest');
+var request = require('supertest'),
+    io = require('socket.io-client');
 
-var app = require('../app').app;
+var app = require('../app').app,
+    settings = require('../settings');
 
 describe('Mobile site', function () {
 
@@ -54,20 +56,48 @@ describe("melting", function () {
                                            lastName: "Wilde"}),
             user2 = models.linkedin_users({linkedin_id: "test_2",
                                            firstName: "Lewis",
-                                           lastName: "Carrol"});
+                                           lastName: "Carrol"}),
+            options ={
+                transports: ['websocket'],
+                'force new connection': true
+            },
+            server;
+
         
         beforeEach(function (done) {
-            user1.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
+            // start server
+            server = require('../server').server;
+            db.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
                 user1.save(function () {
                     user2.save(done);
                 });
             });
         });
         
-        describe("waiting in queue", function () {
-            it("adds to queue", function (done) {
-                console.log("BU");
-                done();
+        describe("waiting for melt", function () {
+            it("socket.io connectable", function (done) {
+                var client1 = io.connect(settings.base_url, options);    
+                client1.on("connect", function (data) {                    
+                    done();
+                });
+            });
+
+            it("emits new ready", function (done) {
+                var client1 = io.connect(settings.base_url, options);
+                client1.on("connect", function () {
+                    client1.on("ready", function (user) {
+                        user.linkedin_id.should.equal("test_2");
+                        user.firstName.should.equal("Lewis");
+                        user.lastName.should.equal("Carrol");
+
+                        done();
+                    });
+                    
+                    var client2 = io.connect(settings.base_url, options);
+                    client2.on("connect", function () {
+                        client2.emit("ready", user2);
+                    });
+                });
             });
         });
         
