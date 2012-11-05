@@ -28,7 +28,7 @@ div.row
          &nbsp;
          a.btn.continue.btn-primary.btn-large(href="/", style="display: none") Continue
          {{else}}
-         a.btn.back(href="/") Back
+         a.btn.back(href="/{{back_url}}") Back
          &nbsp;
          button.btn.btn-primary(type="submit") Save
          {{/if}}

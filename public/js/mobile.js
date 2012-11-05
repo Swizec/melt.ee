@@ -58,6 +58,7 @@ var Events = Backbone.Collection.extend({
 
         __navigate: function (event, href) {
             event.preventDefault();
+            event.stopImmediatePropagation();
 
             if (!href) {
                 href = $(event.target).attr("href");
@@ -102,8 +103,7 @@ var Events = Backbone.Collection.extend({
 
         events: {
             "submit form": "save",
-            "click a.btn.back": "back"
-            //"click a.btn": "__navigate"
+            "click a.btn": "__navigate"
         },
 
         subviews: [],
@@ -146,10 +146,6 @@ var Events = Backbone.Collection.extend({
                 view.render();
                 this.subviews.push(view);
             }, this);
-        },
-
-        back: function (event) {
-            this.__navigate(event, '/'+this.options.back_url);
         }
 
     });
