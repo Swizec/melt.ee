@@ -242,3 +242,14 @@ var Events = Backbone.Collection.extend({
     Backbone.history.start({pushState: true});
 
 })(jQuery);
+
+//For iPhone and Andriod To remove Address bar when viewing website on Safari Mobile
+// When ready...
+window.addEventListener("load",function() {
+  // Set a timeout...
+  setTimeout(function(){
+   // Hide the address bar!
+    window.scrollTo(0, 1);
+   }, 0);
+});
+
