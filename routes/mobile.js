@@ -16,7 +16,7 @@ exports.index = function (req, res) {
 
             if (result.topic1+result.topic2+result.topic3 === ""
                 && !req.path.match(/\/topics/)) {
-                return res.redirect('/mobile/topics');
+                return res.redirect('/mobile/topics/events');
             }
                     
             res.render('mobile.jade', req.session.user_sess);

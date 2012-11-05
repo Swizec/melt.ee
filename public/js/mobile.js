@@ -28,17 +28,16 @@ var Events = Backbone.Collection.extend({
     var Router = Backbone.Router.extend({
         
         routes: {
-            "mobile": "events",
-            "mobile/": "events",
-            "mobile/events": "events",
-            "mobile/topics/*back": "topics",
-            "mobile/ready/:event_id": "ready",
-            "mobile/waiting/:event_id": "waiting",
-            "mobile/waiting/:event_id/:person": "waiting",
-            "mobile/handshake/:event_id/:person": "handshake",
-            "mobile/melt/:event_id/:person": "melt",
-            "mobile/thanks": "thanks"
-        },
+            "": "events",
+            "events": "events",
+            "topics/*back": "topics",
+            "ready/:event_id": "ready",
+            "waiting/:event_id": "waiting",
+            "waiting/:event_id/:person": "waiting",
+            "handshake/:event_id/:person": "handshake",
+            "melt/:event_id/:person": "melt",
+            "thanks": "thanks"
+        }
     });
 
     var PageView = Backbone.View.extend({
@@ -63,8 +62,8 @@ var Events = Backbone.Collection.extend({
             if (!href) {
                 href = $(event.target).attr("href");
             }
-
-            this.options.router.navigate('mobile'+href,
+            
+            this.options.router.navigate(href,
                                          {trigger: true});
         }
     });
@@ -250,8 +249,7 @@ var Events = Backbone.Collection.extend({
         view = new View({router: router,
                          el: $("div#view")});
 
-    Backbone.history.start({pushState: true});
-//ackbone.history.start({pushState: true, root: "/public/search/"})
+    Backbone.history.start({pushState: true, root: "/mobile/"});
 
 })(jQuery);
 

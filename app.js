@@ -71,8 +71,8 @@ app.configure('production', function(){
 //---------------------------------------------------------------//
 // Frontend routes (mobile mostly)
 //---------------------------------------------------------------//
-app.get('/', function (req, res) { res.redirect('/mobile'); });
-app.get('/mobile', route_mobile.index);
+app.get('/', function (req, res) { res.redirect('/mobile/'); });
+app.get('/mobile/', route_mobile.index);
 app.get('/mobile/*', route_mobile.index);
 app.get('/login', route_auth.login);
 app.get('/auth', route_auth.auth);
