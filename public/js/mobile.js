@@ -29,18 +29,20 @@ var Events = Backbone.Collection.extend({
         
         routes: {
             "mobile": "events",
-            "mobile/topics": "topics",
+            "mobile/": "events",
+            "mobile/events": "events",
+            "mobile/topics/*back": "topics",
             "mobile/ready/:event_id": "ready",
             "mobile/waiting/:event_id": "waiting",
             "mobile/waiting/:event_id/:person": "waiting",
             "mobile/handshake/:event_id/:person": "handshake",
             "mobile/melt/:event_id/:person": "melt",
             "mobile/thanks": "thanks"
-        }
+        },
     });
 
     var PageView = Backbone.View.extend({
-        
+
         events: {
             "click a.btn": "__navigate"
         },
@@ -64,7 +66,6 @@ var Events = Backbone.Collection.extend({
             this.options.router.navigate('mobile'+href,
                                          {trigger: true});
         }
-
     });
 
     var EventsView = PageView.extend({
@@ -100,7 +101,9 @@ var Events = Backbone.Collection.extend({
         template: Handlebars.compile($("#template-topics").html()),
 
         events: {
-            "submit form": "save"
+            "submit form": "save",
+            "click a.btn.back": "back"
+            //"click a.btn": "__navigate"
         },
 
         subviews: [],
@@ -109,6 +112,9 @@ var Events = Backbone.Collection.extend({
             var topics = this.topics = new Topics();
             topics.fetch();
             topics.on("reset", this.redraw, this);
+
+            // needed because of generality of PageView and routing
+            this.options.back_url = this.options.event_id;
         },
 
         save: function (event) {
@@ -140,6 +146,10 @@ var Events = Backbone.Collection.extend({
                 view.render();
                 this.subviews.push(view);
             }, this);
+        },
+
+        back: function (event) {
+            this.__navigate(event, '/'+this.options.back_url);
         }
 
     });
