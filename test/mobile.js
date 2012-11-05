@@ -13,7 +13,7 @@ describe('Mobile site', function () {
 
     it('redirects to login', function (done) {
         request(app)
-            .get('/mobile')
+            .get('/mobile/')
             .expect(302)
             .end(function (err, res) {
                 res.headers.location.should.equal('/login');
@@ -40,7 +40,7 @@ describe('Mobile site', function () {
                 .expect(200)
                 .end(function (err, res) {
                     request(app)
-                        .get('/mobile')
+                        .get('/mobile/')
                         .set('cookie', res.header['set-cookie'])
                         .expect(200, done);
                 });
@@ -58,7 +58,7 @@ describe('Mobile site', function () {
 
                 user.save(function () {
                     request(app)
-                        .get('/mobile')
+                        .get('/mobile/')
                         .set('cookie', cookie)
                         .expect(302)
                         .end(function (err, res) {
