@@ -114,6 +114,11 @@ var Events = Backbone.Collection.extend({
         save: function (event) {
             event.preventDefault();
             this.topics.save();
+
+            if (this.options.first_time) {
+                this.$el.find("a.continue").show();
+                this.$el.find("button.first").removeClass("btn-primary").removeClass("btn-large");
+            }
         },
 
         redraw: function () {
