@@ -245,6 +245,7 @@ var Events = Backbone.Collection.extend({
                          el: $("div#view")});
 
     Backbone.history.start({pushState: true});
+//ackbone.history.start({pushState: true, root: "/public/search/"})
 
 })(jQuery);
 
