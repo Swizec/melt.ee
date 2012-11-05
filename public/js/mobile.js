@@ -35,19 +35,20 @@ var Events = Backbone.Collection.extend({
     var Router = Backbone.Router.extend({
         
         routes: {
-            "mobile": "events",
-            "mobile/topics": "topics",
-            "mobile/ready/:event_id": "ready",
-            "mobile/waiting/:event_id": "waiting",
-            "mobile/waiting/:event_id/:person": "waiting",
-            "mobile/handshake/:event_id/:person": "handshake",
-            "mobile/melt/:event_id/:person": "melt",
-            "mobile/thanks": "thanks"
+            "": "events",
+            "events": "events",
+            "topics/*back": "topics",
+            "ready/:event_id": "ready",
+            "waiting/:event_id": "waiting",
+            "waiting/:event_id/:person": "waiting",
+            "handshake/:event_id/:person": "handshake",
+            "melt/:event_id/:person": "melt",
+            "thanks": "thanks"
         }
     });
 
     var PageView = Backbone.View.extend({
-        
+
         events: {
             "click a.btn": "__navigate"
         },
@@ -63,15 +64,15 @@ var Events = Backbone.Collection.extend({
 
         __navigate: function (event, href) {
             event.preventDefault();
+            event.stopImmediatePropagation();
 
             if (!href) {
                 href = $(event.target).attr("href");
             }
-
-            this.options.router.navigate('mobile'+href,
+            
+            this.options.router.navigate(href,
                                          {trigger: true});
         }
-
     });
 
     var EventsView = PageView.extend({
@@ -109,7 +110,8 @@ var Events = Backbone.Collection.extend({
         template: Handlebars.compile($("#template-topics").html()),
 
         events: {
-            "submit form": "save"
+            "submit form": "save",
+            "click a.btn": "__navigate"
         },
 
         subviews: [],
@@ -118,11 +120,19 @@ var Events = Backbone.Collection.extend({
             var topics = this.topics = new Topics();
             topics.fetch();
             topics.on("reset", this.redraw, this);
+
+            // needed because of generality of PageView and routing
+            this.options.back_url = this.options.event_id;
         },
 
         save: function (event) {
             event.preventDefault();
             this.topics.save();
+
+            if (this.options.first_time) {
+                this.$el.find("a.continue").show();
+                this.$el.find("button.first").removeClass("btn-primary").removeClass("btn-large");
+            }
         },
 
         redraw: function () {
@@ -277,6 +287,17 @@ var Events = Backbone.Collection.extend({
         view = new View({router: router,
                          el: $("div#view")});
 
-    Backbone.history.start({pushState: true});
+    Backbone.history.start({pushState: true, root: "/mobile/"});
 
 })(jQuery);
+
+//For iPhone and Andriod To remove Address bar when viewing website on Safari Mobile
+// When ready...
+window.addEventListener("load",function() {
+  // Set a timeout...
+  setTimeout(function(){
+   // Hide the address bar!
+    window.scrollTo(0, 1);
+   }, 0);
+});
+

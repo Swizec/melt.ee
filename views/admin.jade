@@ -47,7 +47,12 @@ block content
     td {{ date_time }}
     td {{ description }}
     td {{ spots }}
-    td {{ active }}
+    td 
+      {{#if active}}
+      input(class='is_active',type='checkbox',checked)
+      {{else}}
+      input(class='is_active',type='checkbox')
+      {{/if}}
     td(class="td_edit")
       div(class="delete_row btn btn-inverse btn-mini") Delete
 

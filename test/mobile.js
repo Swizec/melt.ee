@@ -62,7 +62,7 @@ describe('Mobile site', function () {
                         .set('cookie', cookie)
                         .expect(302)
                         .end(function (err, res) {
-                            res.header.location.should.include('mobile/topics');
+                            res.header.location.should.include('mobile/topics/');
                             done();
                         });
                 });

@@ -1,9 +1,18 @@
 $(function() {
     var cl = console.log;
     var api_str = '\/api\/';
-    var test = '100';
 
     Backbone.sync = function(method, model, options) {
+        if(method == 'update') {
+            $.ajax({ url : model.url(),
+                     data : model.toJSON(),
+                     type : 'PUT',
+                     success : function(resp) {
+                        console.log(resp);
+                        options.success(resp);
+                     }
+            });
+        }
         if(method == 'create' && model.url) {
             var tmp = model.toJSON();
             tmp.cid = model.cid;
@@ -123,6 +132,10 @@ $(function() {
             "click .cancel_form" : "cancelForm",
             "click .save_form" : "saveForm"
         },
+        initialize : function() {
+            cl('form init:');
+            cl(this.model.url());
+        },
         render : function() {
             this.$el.attr('method', 'post');
             this.$el.append(this.template);
@@ -150,18 +163,20 @@ $(function() {
             $('#add_item').show();
         },
         saveForm : function() {
+            cl('save form:');
+            cl(this.model.url());
             //gather form data
             var date_time = '';
             var date = $('#form [name=date]').datepicker("getDate");
             date = date?date.format('Y-m-d'):'';
             var x = $('#form [name=time]').val().split(':');
-            var h = x[0];
+            var h = x[0]?x[0]:'0';
             h = h>9?h:'0'+h;
             var t = x[1]||'00';
             if(date) {
-                date_time = date+'T'+h+':'+t+':00.000';
+                date_time = date+' '+h+':'+t+':00.000';
             }
-
+ 
             var data = {
                 location : $('#form [name=location]').val(),
                 date_time : date_time,

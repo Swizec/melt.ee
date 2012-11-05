@@ -1,10 +1,8 @@
 //================================//
 // CRUD
 //================================//
-
-// TODO!!! tomorrow, replace all 4 with module.exports (otherwise we have to look for user session in every func below
-// before accessing db)
 var ObjectId = mongoose.Types.ObjectId;
+var cl = console.log;
 
 exports.create = function(req, res) {
     // we have different models for each tab (see /models/index.js)
@@ -15,10 +13,6 @@ exports.create = function(req, res) {
 };
 
 exports.read = function(req, res) {
-    if(!req.session.user_sess) {
-        res.send('No session...');
-        return false;
-    }
     var collection = req.params.collection;
     var schema = new mongoose.Schema();
     var API = db.model(collection, schema);
@@ -36,6 +30,11 @@ exports.read_one = function (req, res) {
 };
 
 exports.update = function(req, res) {
+    var collection = req.params.collection;
+    models[req.params.collection].update({ '_id' : new ObjectId(req.params.id) }, { $set : req.body }, function(err, result) {
+        console.log(result);
+        res.send(result);
+    });
 };
 
 exports.delete = function(req, res) {
