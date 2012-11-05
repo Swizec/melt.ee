@@ -4,3 +4,24 @@
 .space_top {
   margin-top: @baseLineHeight*3;
 }
+
+div.disabled_app a {
+    width: @gridColumnWidth*4;
+    display: inline-block;
+
+    img {
+        width: 100%;
+        }
+}
+
+@media (min-width: 1200px) {
+    div.disabled_app a {
+        width: @gridColumnWidth1200*4;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+    div.disabled_app a {
+        width: @gridColumnWidth768*4;
+    }
+}
