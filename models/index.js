@@ -1,4 +1,12 @@
 // User model
+
+var people_schema = new mongoose.Schema({
+    firstName: String,
+    lastName: String,
+    linkedin_id: String,
+    publicUrl: String
+});
+
 var users_schema = new mongoose.Schema({
     linkedin_id : String,
     firstName : String,
@@ -10,7 +18,8 @@ var users_schema = new mongoose.Schema({
     topic1 : String,
     topic2 : String,
     topic3 : String,
-    is_admin : { 'type' : Boolean, 'default' : 0 }
+    is_admin : { 'type' : Boolean, 'default' : 0 },
+    connections: [people_schema]
 });
 
 var conference_schema = new mongoose.Schema({
@@ -27,6 +36,7 @@ db.once('open', function() {
     
     exports.schemas = {
         user: users_schema,
-        conference: conference_schema
+        conference: conference_schema,
+        people: people_schema
     };
 });
