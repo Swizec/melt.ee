@@ -41,12 +41,10 @@ exports.load_topics = function(req, res) {
             models.linkedin_users.find({ linkedin_id : req.session.user_sess.id }, this);
         },
         function(err, result) {
-            console.log(result);
             var topics = {};
             if(_.size(result)) {
                 topics = { topic1 : result[0].topic1 || '', topic2 : result[0].topic2 || '', topic3 : result[0].topic3 || '' };
             }
-            console.log(topics);
             res.writeHeader(200, { "Content-type" : "application/json; charset=utf-8" });
             res.write('var topics = '+JSON.stringify(topics)+';', 'UTF-8');
             res.end();

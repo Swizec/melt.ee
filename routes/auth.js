@@ -138,7 +138,7 @@ exports.login = function(req, res){
                                     is_admin : is_admin
                                 });
 
-                                console.log('Trying to save new user...');
+                                //console.log('Trying to save new user...');
                                 //Trying to save new user...
                                 new_user.save(this); //call next step's function
                             }
@@ -159,7 +159,6 @@ exports.login = function(req, res){
                                 res.redirect('/mobile');
                                 return false;
                             } else {
-                                console.log('Resdirect to topics!');
                                 res.redirect('/topics');
                                 return false;
                             }

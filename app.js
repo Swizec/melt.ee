@@ -15,7 +15,10 @@ var io;
 //-------------------------------------------------------//
 // Load settings
 //-------------------------------------------------------//
-var settings = fs.existsSync('./settings.js')?require('./settings'):require('./def_settings.js');
+var settings = require('./def_settings.js');
+if(fs.existsSync('./settings.js')) {
+    settings = _.extend(settings, require('./settings'));
+}
 
 //-------------------------------------------------------//
 // Globals
