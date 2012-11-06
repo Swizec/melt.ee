@@ -67,6 +67,8 @@ exports.login = function(req, res){
             //-------------------------------------------------------------------//
             // User comes from linkedin auth (every time, yes)
             //-------------------------------------------------------------------//
+
+            // TODO: refactor this to use lib/linkedin.js
             var oa = new OAuth(req.session.oa._requestUrl,
                               req.session.oa._accessUrl,
                               req.session.oa._consumerKey,

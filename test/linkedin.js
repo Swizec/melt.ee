@@ -36,5 +36,16 @@ describe("LinkedIn helper", function () {
 
     });
 
+    it("accepts fields", function (done) {
+        
+        api.__people({fields: ["first-name", "last-name"]},
+                     function (err, data) {
+                         data.should.have.keys(["firstName", "lastName"]);
+
+                         done();
+                     });
+
+    });
+
 });
 
