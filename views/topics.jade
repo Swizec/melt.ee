@@ -14,25 +14,31 @@ block content
   .clearfix.middle
     table.full
       tr
-        th I love to talk about
+        th 
+          .three_topics Please tell us 3 topics you love to talk about.
+            br
+            span They will be shown in mobile app when you will be introduced to other event attendees.
+          .topics_shown These are your three topics that will be shown in your mobile app when meeting another atendee
+      tr
+        th I love to talk about #Topic1
       tr
         td
-          input#topic1.topic_input(type='text')
+          input#topic1.topic_input.input-xxlarge(type='text')
       tr
-        th I also love to talk about
-      tr
-        td
-          input#topic2.topic_input(type='text')
-      tr
-        th And about...
+        th I also love to talk about #Topic2
       tr
         td
-          input#topic3.topic_input(type='text')
+          input#topic2.topic_input.input-xxlarge(type='text')
+      tr
+        th Finally, I also love to talk about #Topic3
+      tr
+        td
+          input#topic3.topic_input.input-xxlarge(type='text')
       tr
         td
       tr
         td.actions
-          div#cancel_topics.btn.btn-inverse Cancel
+          div#cancel_topics.btn.cancel_topics Cancel
           div#save_topics.btn.btn-primary.save_topics Save
           div#edit_topics.btn.btn-primary Edit 
   .hline

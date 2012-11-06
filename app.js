@@ -29,6 +29,7 @@ global.settings = settings;
 //-------------------------------------------------------//
 // Route dependencies
 //-------------------------------------------------------//
+var route_index = require('./routes/index.js');
 var route_auth = require('./routes/auth');
 var route_API = require('./routes/API');
 var route_mobile = require('./routes/mobile');
@@ -72,8 +73,7 @@ app.configure('production', function(){
 //---------------------------------------------------------------//
 // Frontend routes (mobile mostly)
 //---------------------------------------------------------------//
-//app.get('/', function (req, res) { res.redirect('/mobile'); });
-app.get('/', function (req, res) { res.render('desktop.jade'); });
+app.get('/', route_index);
 app.get('/mobile', route_mobile.index);
 app.get('/mobile/*', route_mobile.index);
 app.get('/login', route_auth.login);

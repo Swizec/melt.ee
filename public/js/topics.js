@@ -17,6 +17,7 @@ console.log(topics);
             success : function(data) {
                 topics = { topic1 : $('#topic1').val(), topic2 : $('#topic2').val(), topic3 : $('#topic3').val() };
                 hide_topic_inputs();
+                done_edit();
             }
         });
     });
@@ -28,7 +29,7 @@ console.log(topics);
     function edit_topics() {
         _.each([1,2,3], function(i) {
             var val = $('#topic'+i).html();
-            $('#topic'+i).after($('<input />', { id : 'topic'+i, type : "text", "class" : 'topic_input', value : topics['topic'+i] })).remove();
+            $('#topic'+i).after($('<input />', { id : 'topic'+i, type : "text", "class" : 'topic_input input-xxlarge', value : topics['topic'+i] })).remove();
         });
         $('#save_topics').show();
         $('#cancel_topics').show();
@@ -61,7 +62,13 @@ console.log(topics);
         $('#edit_topics').css('display', 'inline');
     }
 
+    function done_edit() {
+        $('.topics_shown').show();
+        $('.three_topics').hide();
+    }
+
     if(topics.topic1 || topics.topic2 || topics.topic3) {
+        done_edit();
         hide_topic_inputs();
     } else {
         $('#save_topics').show();
