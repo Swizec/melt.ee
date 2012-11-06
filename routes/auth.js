@@ -74,7 +74,6 @@ exports.login = function(req, res){
                               req.session.oa._version,
                               req.session.oa._authorize_callback,
                               req.session.oa._signatureMethod);
-           
 
             oa.getProtectedResource(
                 "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,picture-url,public-profile-url)?format=json",
