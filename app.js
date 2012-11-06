@@ -25,6 +25,7 @@ global.step = step;
 global.db = db;
 global.mongoose = mongoose;
 global.settings = settings;
+global.redis = require('redis').createClient();
 
 //-------------------------------------------------------//
 // Route dependencies
@@ -74,7 +75,6 @@ app.configure('production', function(){
 // Frontend routes (mobile mostly)
 //---------------------------------------------------------------//
 app.get('/', route_index);
-app.get('/mobile', route_mobile.index);
 app.get('/mobile/*', route_mobile.index);
 app.get('/login', route_auth.login);
 app.get('/auth', route_auth.auth);
@@ -102,8 +102,11 @@ app.get('/api/me', requireLogin, route_API.me);
 app.get('/api/my_topics', requireLogin, route_API.my_topics);
 app.put('/api/my_topics/:id', requireLogin, route_API.save_my_topic);
 
+app.get('/api/ready_users', route_API.ready_users);
+
 app.post('/api/:collection', requireLogin, route_API.create);
 app.get('/api/:collection', requireLogin, route_API.read);
+app.get('/api/:collection/:id', requireLogin, route_API.read_one);
 app.put('/api/:collection/:id', requireLogin, route_API.update);
 app.delete('/api/:collection/:id', requireLogin, route_API.delete);
 

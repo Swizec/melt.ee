@@ -24,9 +24,11 @@ div.row
 
       div.control-group
          {{#if first_time}}
-         button.btn.btn-primary.btn-large(type="submit") Start
-         {{else}}
-         a.btn(href="/") Back
+         button.btn.btn-primary.btn-large.first(type="submit") Save
          &nbsp;
-         button.btn.btn-primary(type="submit") Submit
+         a.btn.continue.btn-primary.btn-large(href="/", style="display: none") Continue
+         {{else}}
+         a.btn.back(href="/{{back_url}}") Back
+         &nbsp;
+         button.btn.btn-primary(type="submit") Save
          {{/if}}

@@ -21,6 +21,14 @@ exports.read = function(req, res) {
     });
 };
 
+exports.read_one = function (req, res) {
+    var API = db.model(req.params.collection,
+                       new mongoose.Schema());
+    API.findOne({_id: req.params.id}, function (err, result) {
+        res.send(result);
+    });
+};
+
 exports.update = function(req, res) {
     var collection = req.params.collection;
     delete req.body._id;
@@ -79,5 +87,11 @@ exports.save_my_topic = function (req, res) {
         user.save(function () {
             res.send({});
         });
+    });
+};
+
+exports.ready_users = function (req, res) {
+    redis.get("ready_users", function (err, count) {
+        res.send({count: parseInt(count, 10)});
     });
 };

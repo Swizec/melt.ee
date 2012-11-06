@@ -39,6 +39,7 @@ describe('Helper APIs', function () {
                     res.body[0].should.have.property('firstName');
                     res.body[0].should.have.property('lastName');
                     res.body[0].should.have.property('linkedin_id');
+
                     for (var i=1; i<=3; i++) {
                         res.body[0].should.have.property('topic'+i);
                     }

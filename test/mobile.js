@@ -3,47 +3,13 @@ var chai = require('chai'),
     mocha = require('mocha'),
     should = chai.should();
 
-var request = require('supertest');
+var request = require('supertest'),
+    io = require('socket.io-client');
 
-var app = require('../app').app;
+var app = require('../app').app,
+    settings = require('../settings');
 
 describe('Mobile site', function () {
-
-    it('redirects to login', function (done) {
-        request(app)
-            .get('/mobile')
-            .expect(302)
-            .end(function (err, res) {
-                res.headers.location.should.equal('/login');
-                done();
-            });
-    });
-
-    it('starts oauth', function (done) {
-        request(app)
-            .get('/auth')
-            .expect(302)
-            .end(function (err, res) {
-                res.header.location.should.include('https://www.linkedin.com/uas/oauth/authenticate');
-                done();
-            });
-    });
-
-    it('stubs session', function (done) {
-        var API = db.model('linkedin_users', new mongoose.Schema());
-        API.find({}).execFind(function (err, result) {
-            request(app)
-                .get('/__stub_session')
-                .set('X-User-Id', result[0].linkedin_id)
-                .expect(200)
-                .end(function (err, res) {
-                    request(app)
-                        .get('/mobile')
-                        .set('cookie', res.header['set-cookie'])
-                        .expect(200, done);
-                });
-        });
-    });
 
     it('redirects to topics when fresh user', function (done) {
         stub_session(function (cookie) {
@@ -56,11 +22,11 @@ describe('Mobile site', function () {
 
                 user.save(function () {
                     request(app)
-                        .get('/mobile')
+                        .get('/mobile/')
                         .set('cookie', cookie)
                         .expect(302)
                         .end(function (err, res) {
-                            res.header.location.should.include('mobile/topics');
+                            res.header.location.should.include('mobile/topics/');
                             done();
                         });
                 });
@@ -87,6 +53,91 @@ describe('Mobile site', function () {
         });
     });
 });
+
+describe("melting", function () {
+    setTimeout(function () { // give db time to connect
+        var db = models.linkedin_users,
+            user1 = models.linkedin_users({linkedin_id: "test_1",
+                                           firstName: "Oscar",
+                                           lastName: "Wilde"}),
+            user2 = models.linkedin_users({linkedin_id: "test_2",
+                                           firstName: "Lewis",
+                                           lastName: "Carrol"}),
+            options ={
+                transports: ['websocket'],
+                'force new connection': true
+            },
+            server;
+
+        var client = function () {
+            return io.connect(settings.base_url, options);
+        };
+
+        
+        beforeEach(function (done) {
+            // start server
+            server = require('../server').server;
+            redis.set("ready_users", 0, function () {
+                db.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
+                    user1.save(function () {
+                        user2.save(done);
+                    });
+                });
+            });
+        });
+        
+        describe("waiting for melt", function () {
+            it("socket.io connectable", function (done) {
+                var client1 = client();
+                client1.once("connect", function (data) {                    
+                    done();
+                });
+            });
+
+            it("emits new ready", function (done) {
+                var client1 = client();
+                client1.once("connect", function () {
+                    client1.once("ready", function (user) {
+                        user.linkedin_id.should.equal("test_2");
+                        user.firstName.should.equal("Lewis");
+                        user.lastName.should.equal("Carrol");
+                        
+                        done();
+                    });
+                    
+                    var client2 = client();
+                    client2.once("connect", function () {
+                        client2.emit("ready", user2);
+                    });
+                });
+            });
+
+            it("counts available melters", function (done) {
+                var client1 = client(), 
+                    client2 = client();
+                client1.once("connect", function () {
+                    client1.once("ready", function () {
+                        request(app)
+                            .get('/api/ready_users')
+                            .expect(200)
+                            .expect('Content-Type', /json/)                            
+                            .end(function (err, result) {
+                                result.body.count.should.equal(2);
+                                
+                                done();
+                            });
+                    });
+
+                    client1.emit("ready", user1);
+                    client2.emit("ready", user2);
+
+                });
+            });
+        });
+        
+    }, 300);
+});
+
 
 var stub_session = function (callback) {
     // give db time to connect
