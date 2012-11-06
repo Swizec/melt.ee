@@ -35,6 +35,9 @@ describe('Auth', function () {
     it('stubs session', function (done) {
         var API = db.model('linkedin_users', new mongoose.Schema());
         API.find({}).execFind(function (err, result) {
+            result[0].topic1 = "bla";
+            result[0].save(function () {
+
             request(app)
                 .get('/__stub_session')
                 .set('X-User-Id', result[0].linkedin_id)
@@ -45,6 +48,7 @@ describe('Auth', function () {
                         .set('cookie', res.header['set-cookie'])
                         .expect(200, done);
                 });
+            });
         });
     });
 
