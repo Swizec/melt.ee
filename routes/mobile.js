@@ -9,8 +9,8 @@ exports.index = function (req, res) {
     models.linkedin_users.findOne({linkedin_id: req.session.user_sess.id},
         function (err, result) {
             // disable everything until launch
-            if (new Date() < new Date(2012, 11, 10, 15, 00)) {
-//                && settings.dev_ips.indexOf(req.ip) < 0){ // TODO! disabled until we resolve nginx proxy-ing
+            if (new Date() < new Date(2012, 11, 10, 15, 00)
+                && settings.dev_ips.indexOf(req.ip) < 0){
                 return res.render('mobile-disabled.jade', req.session.user_sess);
             }
 
@@ -22,4 +22,3 @@ exports.index = function (req, res) {
             res.render('mobile.jade', req.session.user_sess);
         });
 };
-
