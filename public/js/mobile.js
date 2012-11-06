@@ -1,6 +1,13 @@
 
 var Topic = Backbone.Model.extend({});
-var Event = Backbone.Model.extend({});
+var Event = Backbone.Model.extend({
+    url: function () {
+        return '/api/conferences/'+this.attributes._id;
+    }
+});
+var ReadyUsers = Backbone.Model.extend({
+    url: '/api/ready_users'
+});
 
 var Topics = Backbone.Collection.extend({
     model: Topic,
@@ -28,19 +35,20 @@ var Events = Backbone.Collection.extend({
     var Router = Backbone.Router.extend({
         
         routes: {
-            "mobile": "events",
-            "mobile/topics": "topics",
-            "mobile/ready/:event_id": "ready",
-            "mobile/waiting/:event_id": "waiting",
-            "mobile/waiting/:event_id/:person": "waiting",
-            "mobile/handshake/:event_id/:person": "handshake",
-            "mobile/melt/:event_id/:person": "melt",
-            "mobile/thanks": "thanks"
+            "": "events",
+            "events": "events",
+            "topics/*back": "topics",
+            "ready/:event_id": "ready",
+            "waiting/:event_id": "waiting",
+            "waiting/:event_id/:person": "waiting",
+            "handshake/:event_id/:person": "handshake",
+            "melt/:event_id/:person": "melt",
+            "thanks": "thanks"
         }
     });
 
     var PageView = Backbone.View.extend({
-        
+
         events: {
             "click a.btn": "__navigate"
         },
@@ -56,15 +64,15 @@ var Events = Backbone.Collection.extend({
 
         __navigate: function (event, href) {
             event.preventDefault();
+            event.stopImmediatePropagation();
 
             if (!href) {
                 href = $(event.target).attr("href");
             }
-
-            this.options.router.navigate('mobile'+href,
+            
+            this.options.router.navigate(href,
                                          {trigger: true});
         }
-
     });
 
     var EventsView = PageView.extend({
@@ -83,6 +91,8 @@ var Events = Backbone.Collection.extend({
 
         navigate: function (event) {
             var chosen = this.$el.find("select:visible").val();
+            this.options.router.chosenEvent = this.Events.where({_id: chosen})[0];
+
             this.__navigate(event, '/ready/'+chosen);
         },
 
@@ -100,7 +110,8 @@ var Events = Backbone.Collection.extend({
         template: Handlebars.compile($("#template-topics").html()),
 
         events: {
-            "submit form": "save"
+            "submit form": "save",
+            "click a.btn": "__navigate"
         },
 
         subviews: [],
@@ -109,11 +120,19 @@ var Events = Backbone.Collection.extend({
             var topics = this.topics = new Topics();
             topics.fetch();
             topics.on("reset", this.redraw, this);
+
+            // needed because of generality of PageView and routing
+            this.options.back_url = this.options.event_id;
         },
 
         save: function (event) {
             event.preventDefault();
             this.topics.save();
+
+            if (this.options.first_time) {
+                this.$el.find("a.continue").show();
+                this.$el.find("button.first").removeClass("btn-primary").removeClass("btn-large");
+            }
         },
 
         redraw: function () {
@@ -176,7 +195,30 @@ var Events = Backbone.Collection.extend({
     });
 
     var ReadyView = PageView.extend({
-        template: Handlebars.compile($("#template-ready").html())
+        template: Handlebars.compile($("#template-ready").html()),
+        meta_template: Handlebars.compile($("#template-ready-meta").html()),
+
+        initialize: function () {
+            this.model = new ReadyUsers();
+            this.model.on("change", this.number, this);
+        },
+
+        render: function () {
+            this.model.fetch();
+            this.__render();
+
+            this.render_meta("~");
+        },
+
+        render_meta: function (count) {
+            this.$el.find(".meta").html(
+                this.meta_template({count: count,
+                                    event: this.options.router.chosenEvent.get("location")}));
+        },
+
+        number: function () {
+            this.render_meta(this.model.get("count"));
+        }
     });
 
     var WaitingView = PageView.extend({
@@ -225,6 +267,12 @@ var Events = Backbone.Collection.extend({
         },
 
         render: function (route, ids) {
+            // this needs to be solved more cleanly
+            if (!this.options.router.chosenEvent && ids[0]) {
+                var chosen = this.options.router.chosenEvent = new Event({_id: ids[0]});
+                chosen.fetch();
+            }
+
             var view = new this.pages[route]({el: this.$el,
                                               router: this.options.router,
                                               event_id: ids[0],
@@ -239,7 +287,7 @@ var Events = Backbone.Collection.extend({
         view = new View({router: router,
                          el: $("div#view")});
 
-    Backbone.history.start({pushState: true});
+    Backbone.history.start({pushState: true, root: "/mobile/"});
 
 })(jQuery);
 
