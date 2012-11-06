@@ -4,6 +4,7 @@ var users_schema = new mongoose.Schema({
     firstName : String,
     lastName : String,
     headline : String,
+    email : String,
     pictureUrl : String,
     publicUrl : String,
     creation_timestamp : { 'type': Date, 'default': Date.now },

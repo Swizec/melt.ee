@@ -1,0 +1,42 @@
+extend layout_desktop
+
+block css
+  link(rel='stylesheet', href='/css/desktop.css')
+
+block content
+  .bg
+  .clearfix.middle.top
+    .td
+      a(href="/")
+        img(src="img/meltee-logo.png")
+    .td
+      a(href="/auth")
+        img(src='/img/login_with_linkedin.png')
+      .why_linkedin 
+        b Why log in with Linkedin?
+        span We want to introduce you only to new people at events. Linkedin helps us check who you already know.
+  .clearfix.middle.index_body
+    .tr
+      .td
+        iframe(width="420",height="315",src="http://www.youtube.com/embed/73bsLnsOGIc",frameborder="0",allowfullscreen)
+      .td
+        div Events where Melt.ee is available:
+        div.celje
+          a(href="http://www.tedxcelje.com")
+            img(src="/img/tedxcelje_logo.png")
+        .launch_when We're launching at TEDxCelje in Slovenia on November 10th
+          br 
+          span Want Melt.ee at your event?
+            b 
+            a(href="mailto:info@melt.ee") Contact us.
+        .mobile_apps Android and iPhone apps are coming soon. In the mean time, app works&nbsp;
+          span.red via your&nbsp;
+            b smartphone browser at&nbsp;
+            a(href="http://melt.ee") http://melt.ee
+        .logos
+          img.margin_right(src="/img/coming_soon.png")
+          img.margin_right(src="/img/google_play.png")
+          img(src="/img/app_store.png")
+  .clearfix.middle.footer
+    div Melt.ee service is operated by company 3BL d.o.o. in Slovenia, founded by&nbsp;
+     a(href="http://si.linkedin.com/in/matejgolob") TEDster Matej Golob

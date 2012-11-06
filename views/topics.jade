@@ -1,0 +1,45 @@
+extend layout_desktop
+
+block css
+  link(rel='stylesheet', href='/css/desktop.css')
+
+block content
+  .clearfix.middle.top
+    .td
+      a(href="/")
+        img(src="img/meltee-logo.png")
+    .td.right
+      a#logout.btn.btn-inverse(href='/logout') Log Out
+  .hline
+  .clearfix.middle
+    table.full
+      tr
+        th I love to talk about
+      tr
+        td
+          input#topic1.topic_input(type='text')
+      tr
+        th I also love to talk about
+      tr
+        td
+          input#topic2.topic_input(type='text')
+      tr
+        th And about...
+      tr
+        td
+          input#topic3.topic_input(type='text')
+      tr
+        td
+      tr
+        td.actions
+          div#cancel_topics.btn.btn-inverse Cancel
+          div#save_topics.btn.btn-primary.save_topics Save
+          div#edit_topics.btn.btn-primary Edit 
+  .hline
+  .clearfix.middle.footer
+    div Melt.ee service is operated by company 3BL d.o.o. in Slovenia, founded by&nbsp;
+     a(href="http://si.linkedin.com/in/matejgolob") Matej Golob
+
+block scripts
+  script(src='/load_topics.js')
+  script(src='/js/topics.js')

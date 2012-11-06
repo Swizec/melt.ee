@@ -23,9 +23,13 @@ exports.read = function(req, res) {
 
 exports.update = function(req, res) {
     var collection = req.params.collection;
-    models[req.params.collection].update({ '_id' : new ObjectId(req.params.id) }, { $set : req.body }, function(err, result) {
-        console.log(result);
-        res.send(result);
+    delete req.body._id;
+    delete req.body.__v;
+    models[req.params.collection].update({ _id : req.params.id }, req.body, function(err, numberAffected, raw) {
+        if(err) {
+            console.log(err);
+        }
+        res.send({ ok : 1 });
     });
 };
 
@@ -47,7 +51,7 @@ exports.me = function (req, res) {
 
     my_data(user, function (err, result) {
         res.send(result);
-    });              
+    });
 };
 
 exports.my_topics = function (req, res) {
@@ -56,14 +60,14 @@ exports.my_topics = function (req, res) {
     my_data(user, function (err, result) {
         result = result[0];
 
-        res.send([{topic: result.topic1, id: 1}, 
-                  {topic: result.topic2, id: 2}, 
+        res.send([{topic: result.topic1, id: 1},
+                  {topic: result.topic2, id: 2},
                   {topic: result.topic3, id: 3}]);
     });
 };
 
 exports.save_my_topic = function (req, res) {
-    var user = req.session.user_sess.id; 
+    var user = req.session.user_sess.id;
 
     // TODO: make sure posted topic is sane
 

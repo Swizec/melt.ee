@@ -33,6 +33,7 @@ var route_auth = require('./routes/auth');
 var route_API = require('./routes/API');
 var route_mobile = require('./routes/mobile');
 var route_admin = require('./routes/admin');
+var route_topics = require('./routes/topics');
 
 var models = require('./models');
 global.models = models;
@@ -71,13 +72,17 @@ app.configure('production', function(){
 //---------------------------------------------------------------//
 // Frontend routes (mobile mostly)
 //---------------------------------------------------------------//
-app.get('/', function (req, res) { res.redirect('/mobile'); });
+//app.get('/', function (req, res) { res.redirect('/mobile'); });
+app.get('/', function (req, res) { res.render('desktop.jade'); });
 app.get('/mobile', route_mobile.index);
 app.get('/mobile/*', route_mobile.index);
 app.get('/login', route_auth.login);
 app.get('/auth', route_auth.auth);
 app.get('/access_token', route_auth.access_token);
 app.get('/logout', route_auth.logout);
+app.get('/topics', route_topics.topics);
+app.get('/load_topics.js', route_topics.load_topics);
+app.post('/save_topics', route_topics.save_topics);
 
 // this should only be used for tests
 app.get('/__stub_session', route_auth.stub_session);

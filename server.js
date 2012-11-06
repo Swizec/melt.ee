@@ -1,6 +1,5 @@
 
-var app = require('./app').app,
-    settings = require('./settings');
+var app = require('./app').app;
 
 //------------------------------------------------------------------//
 // Create server

@@ -1,4 +1,4 @@
-extends layout
+extends layout_desktop
 
 block content
      table(id='main_table')
@@ -10,8 +10,8 @@ block content
             div(id='name')
               = name
             br(clear='both')
-            a(id='logout',href='/logout',class='grey_button') Log Out
-      table(class="full")
+            a.grey_button(id='logout',href='/logout') Log Out
+      table.full
         tr
           th I love to talk about
         tr
