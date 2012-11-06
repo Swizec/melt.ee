@@ -94,20 +94,12 @@ describe("melting", function () {
                 });
             });
 
-            it("emits new ready", function (done) {
+            it("executes ready callback", function (done) {
                 var client1 = client();
+
                 client1.once("connect", function () {
-                    client1.once("ready", function (user) {
-                        user.linkedin_id.should.equal("test_2");
-                        user.firstName.should.equal("Lewis");
-                        user.lastName.should.equal("Carrol");
-                        
+                    client1.emit("ready", user1, function () {
                         done();
-                    });
-                    
-                    var client2 = client();
-                    client2.once("connect", function () {
-                        client2.emit("ready", user2);
                     });
                 });
             });
@@ -116,21 +108,20 @@ describe("melting", function () {
                 var client1 = client(), 
                     client2 = client();
                 client1.once("connect", function () {
-                    client1.once("ready", function () {
-                        request(app)
-                            .get('/api/ready_users')
-                            .expect(200)
-                            .expect('Content-Type', /json/)                            
-                            .end(function (err, result) {
-                                result.body.count.should.equal(2);
+                    client1.emit("ready", user1, function () {
+                        client2.emit("ready", user2, function () {
+
+                            request(app)
+                                .get('/api/ready_users')
+                                .expect(200)
+                                .expect('Content-Type', /json/)
+                                .end(function (err, result) {
+                                    result.body.count.should.equal(2);
                                 
-                                done();
-                            });
+                                    done();
+                                });
+                        });
                     });
-
-                    client1.emit("ready", user1);
-                    client2.emit("ready", user2);
-
                 });
             });
 
@@ -139,12 +130,11 @@ describe("melting", function () {
                     client2 = client();
 
                 client1.once("connect", function () {
-                    client1.once("ready", function () {
+                    client1.emit("ready", user1, function () {
                         redis.smembers("ready_users", function (err, res) {
                             res.should.include(""+user1.id);
 
-                            client2.emit("ready", user2);
-                            client2.once("ready", function () {
+                            client2.emit("ready", user2, function () {
                                 redis.smembers("ready_users", function (err, res) {
                                     res.should.include(""+user1.id);
                                     res.should.include(""+user2.id);
@@ -154,8 +144,6 @@ describe("melting", function () {
 
                         });
                     });
-
-                    client1.emit("ready", user1);
                 });
 
             });
@@ -164,7 +152,7 @@ describe("melting", function () {
                 var client1 = client();
 
                 client1.once("connect", function () {
-                    client1.once("ready", function () {
+                    client1.emit("ready", user1, function () {
                         client1.disconnect();
                         
                         setTimeout(function () {
@@ -175,8 +163,6 @@ describe("melting", function () {
                         }, 300);
 
                     });
-
-                    client1.emit("ready", user1);
                 });
             });
         });
