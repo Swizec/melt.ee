@@ -59,6 +59,7 @@ exports.access_token = function(req, res){
 };
 
 exports.login = function(req, res) {
+
     //--------------------------------------------------------------//
     // No session, user is NOT logged in, show LINKEDin button
     //--------------------------------------------------------------//
@@ -68,7 +69,6 @@ exports.login = function(req, res) {
         //-------------------------------------------------------------------//
         // User comes from linkedin auth (every time, yes)
         //-------------------------------------------------------------------//
-
         var linkedin = new Linkedin(req.session),
             users = models.linkedin_users; // smaller code :)
 
@@ -97,29 +97,49 @@ exports.login = function(req, res) {
                 publicUrl : person.publicProfileUrl,
                 is_admin : 0
             });
-            user.save(callback);
+            
+            add_connections(user, callback);
+        };
+
+        var add_connections = function (user, callback) {
+            linkedin.connections(function (err, conns) {
+                conns.map(function (person) {
+                    user.connections.push({firstName: person.firstName,
+                                           lastName: person.lastName,
+                                           linkedin_id: person.id,
+                                           publicUrl: person.publicUrl
+                                          });
+                });
+
+                user.save(callback);
+            });
         };
 
         linkedin.me(function (err, person) {
 
-            users.findOne({linkedin_id: person.id}, function (err, row) {
+            users.findOne({linkedin_id: person.id}, function (err, user) {
 
                 // create session
                 req.session.user_sess = {
                     id : person.id,
                     name : person.firstName +' '+ person.lastName,
-                    is_admin : (row) ? row.is_admin : 0,
+                    is_admin : (user) ? user.is_admin : 0,
                     url : person.publicProfileUrl,
                     img_src : person.pictureUrl || '',
                     headline : person.headline || ''
                 };
 
-                if (!row) {
+                if (!user) {
                     // new user
-                    return create_user(person, finish);
+                    create_user(person, finish);
+                }else if (user.connections.length <= 0) {
+                    // needs connections
+                    add_connections(user, finish);
+                }else{
+                    // we're done here
+                    finish();
                 }
 
-                finish();
             });
 
         });
@@ -134,6 +154,21 @@ exports.logout = function(req, res) {
 
 exports.stub_session = function (req, res) {
     var user_id = req.headers['x-user-id'];
+    
+    req.session = _.extend(req.session, {oa: 
+   { _isEcho: false,
+     _requestUrl: 'https://api.linkedin.com/uas/oauth/requestToken?scope=r_network',
+     _accessUrl: 'https://api.linkedin.com/uas/oauth/accessToken',
+     _consumerKey: 'qm2c7dg5f6p4',
+     _consumerSecret: 'XbD1qO2THjiWZyrt',
+     _version: '1.0',
+     _authorize_callback: 'http://192.168.1.1:3000/access_token',
+     _signatureMethod: 'HMAC-SHA1',
+     _nonceSize: 32 },
+  oauth_token: 'b2683701-4550-4c59-8e7c-0b2c2b1d5743',
+  oauth_token_secret: '3972e88f-07fe-4e43-9780-fb645e56ed3f',
+  oauth_access_token: '57f2497b-ca5c-45b2-8e99-cec22ecbc84d',
+  oauth_access_token_secret: 'd1aac19e-0e71-4ac1-a25f-a2e4607cd3cf' });
 
     models.linkedin_users.find({linkedin_id: user_id},
                                function (err, result) {
@@ -149,6 +184,8 @@ exports.stub_session = function (req, res) {
                                        img_src : row.pictureUrl || '',
                                        headline : row.headline || ''
                                    };
+
+                                   
                                    res.send(row);
                                });
 

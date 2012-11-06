@@ -62,12 +62,14 @@ describe('Auth', function () {
                 request(app)
                     .get('/login')
                     .set('cookie', cookie)
-                    .expect(200)
+                    .expect(302)
                     .end(function (err, res) {
                         models.linkedin_users.find(
                             {linkedin_id: me_id}, 
                             function (err, res) {
                                 res[0].connections.should.have.length.above(5);
+
+                                done();
                             });
                     });
             });
