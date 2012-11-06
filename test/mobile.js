@@ -159,6 +159,26 @@ describe("melting", function () {
                 });
 
             });
+
+            it("removes disconnected melters", function (done) {
+                var client1 = client();
+
+                client1.once("connect", function () {
+                    client1.once("ready", function () {
+                        client1.disconnect();
+                        
+                        setTimeout(function () {
+                            redis.smembers("ready_users", function (err, res) {
+                                res.should.not.include(""+user1.id);
+                                done();
+                            });
+                        }, 300);
+
+                    });
+
+                    client1.emit("ready", user1);
+                });
+            });
         });
         
     }, 300);
