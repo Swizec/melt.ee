@@ -1,4 +1,5 @@
-var OAuth = require('oauth').OAuth;
+var OAuth = require('oauth').OAuth,
+    Linkedin = require('../lib/linkedin').Linkedin;
 
 exports.auth = function(req, res){
     var getRequestTokenUrl = "https://api.linkedin.com/uas/oauth/requestToken?scope=r_network";
@@ -57,106 +58,72 @@ exports.access_token = function(req, res){
     });
 };
 
-exports.login = function(req, res){
-        //--------------------------------------------------------------//
-        // No session, user is NOT logged in, show LINKEDin button
-        //--------------------------------------------------------------//
-        if(!req.session.oauth_access_token) {
-            res.render('login.jade', {});
-        } else {
-            //-------------------------------------------------------------------//
-            // User comes from linkedin auth (every time, yes)
-            //-------------------------------------------------------------------//
+exports.login = function(req, res) {
+    //--------------------------------------------------------------//
+    // No session, user is NOT logged in, show LINKEDin button
+    //--------------------------------------------------------------//
+    if(!req.session.oauth_access_token) {
+        res.render('login.jade', {});
+    } else {
+        //-------------------------------------------------------------------//
+        // User comes from linkedin auth (every time, yes)
+        //-------------------------------------------------------------------//
 
-            // TODO: refactor this to use lib/linkedin.js
-            var oa = new OAuth(req.session.oa._requestUrl,
-                              req.session.oa._accessUrl,
-                              req.session.oa._consumerKey,
-                              req.session.oa._consumerSecret,
-                              req.session.oa._version,
-                              req.session.oa._authorize_callback,
-                              req.session.oa._signatureMethod);
+        var linkedin = new Linkedin(req.session),
+            users = models.linkedin_users; // smaller code :)
 
-            oa.getProtectedResource(
-                "http://api.linkedin.com/v1/people/~:(id,first-name,last-name,headline,picture-url,public-profile-url)?format=json",
-                "GET",
-                req.session.oauth_access_token,
-                req.session.oauth_access_token_secret,
-                function (error, data, response) {
-                    
-                    var person = JSON.parse(data);
+        var finish = function (err) {
+            if(err) {
+                console.log('Error saving person...');
+                console.log(err);
+            }
+            
+            if (req.session.redirect == 'admin') {
+                delete req.session.redirect;
+                return res.redirect('/admin');
+            }
+            
+            res.redirect('/');
+        };
 
-                    //console.log('person: ===============>'); console.log(person);
+        // TODO: eventually move this to a central part of codebase handling data
+        var create_user = function (person, callback) {
+            var user = users({
+                linkedin_id : person.id,
+                firstName : person.firstName,
+                lastName : person.lastName,
+                headline : person.headline,
+                pictureUrl : person.pictureUrl,
+                publicUrl : person.publicProfileUrl,
+                is_admin : 0
+            });
+            user.save(callback);
+        };
 
-                    if(models.linkedin_users) {
-                        step(
+        linkedin.me(function (err, person) {
 
-                        function() {
-                            models.linkedin_users.find({ linkedin_id : person.id }, this);
-                        },
-                        
-                        function(err, result) {
-                            if(_.size(result)) {
-                                //------------------------------//
-                                // Existing user, create session
-                                //------------------------------//
-                                var row = result[0];
-                                req.session.user_sess = {
-                                    id : person.id,
-                                    name : person.firstName +' '+ person.lastName,
-                                    is_admin : row.is_admin,
-                                    url : person.publicProfileUrl,
-                                    img_src : person.pictureUrl || '',
-                                    headline : person.headline || ''
-                                };
-                                return false; //call next step's function
-                            } else {
-                                //------------------------------//
-                                // New user, create session
-                                //------------------------------//
-                                req.session.user_sess = {
-                                    id : person.id,
-                                    name : person.firstName +' '+ person.lastName,
-                                    is_admin : 0,
-                                    url : person.publicProfileUrl,
-                                    img_src : person.pictureUrl || '',
-                                    headline : person.headline || ''
-                                };
+            users.findOne({linkedin_id: person.id}, function (err, row) {
 
-                                var is_admin = 0;
-                                
-                                var new_user = models.linkedin_users({
-                                    linkedin_id : person.id,
-                                    firstName : person.firstName,
-                                    lastName : person.lastName,
-                                    headline : person.headline,
-                                    pictureUrl : person.pictureUrl,
-                                    publicUrl : person.publicProfileUrl,
-                                    is_admin : is_admin
-                                });
+                // create session
+                req.session.user_sess = {
+                    id : person.id,
+                    name : person.firstName +' '+ person.lastName,
+                    is_admin : (row) ? row.is_admin : 0,
+                    url : person.publicProfileUrl,
+                    img_src : person.pictureUrl || '',
+                    headline : person.headline || ''
+                };
 
-                                console.log('Trying to save new user...');
-                                //Trying to save new user...
-                                new_user.save(this); //call next step's function
-                            }
-                        },
-                        function(err) {
-                            if(err) {
-                                console.log('Error saving person...');
-                                console.log(err);
-                            }
-
-                            if (req.session.redirect == 'admin') {
-                                delete req.session.redirect;
-                                return res.redirect('/admin');
-                            }
-
-                            res.redirect('/');
-                        }); //step
-                    }
+                if (!row) {
+                    // new user
+                    return create_user(person, finish);
                 }
-            );
-        }
+
+                finish();
+            });
+
+        });
+    };
 };
 
 exports.logout = function(req, res) {

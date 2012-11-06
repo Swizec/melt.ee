@@ -15,9 +15,9 @@ var users_schema = new mongoose.Schema({
     pictureUrl : String,
     publicUrl : String,
     creation_timestamp : { 'type': Date, 'default': Date.now },
-    topic1 : String,
-    topic2 : String,
-    topic3 : String,
+    topic1 : {type: String, default: ''},
+    topic2 : {type: String, default: ''},
+    topic3 : {type: String, default: ''},
     is_admin : { 'type' : Boolean, 'default' : 0 },
     connections: [people_schema]
 });
