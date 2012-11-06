@@ -77,7 +77,7 @@ describe("melting", function () {
         beforeEach(function (done) {
             // start server
             server = require('../server').server;
-            redis.set("ready_users", 0, function () {
+            redis.del("ready_users", function (err) {
                 db.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
                     user1.save(function () {
                         user2.save(done);
@@ -132,6 +132,32 @@ describe("melting", function () {
                     client2.emit("ready", user2);
 
                 });
+            });
+
+            it("stores available melters", function (done) {
+                var client1 = client(),
+                    client2 = client();
+
+                client1.once("connect", function () {
+                    client1.once("ready", function () {
+                        redis.smembers("ready_users", function (err, res) {
+                            res.should.include(""+user1.id);
+
+                            client2.emit("ready", user2);
+                            client2.once("ready", function () {
+                                redis.smembers("ready_users", function (err, res) {
+                                    res.should.include(""+user1.id);
+                                    res.should.include(""+user2.id);
+                                    done();
+                                });
+                            });
+
+                        });
+                    });
+
+                    client1.emit("ready", user1);
+                });
+
             });
         });
         
