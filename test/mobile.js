@@ -209,11 +209,6 @@ describe("melting", function () {
         describe("User matching", function (done) {
             
             it("is empty when nobody", function (done) {
-                db.find(
-                    {linkedin_id: {$in: ["test_1", "test_2", "test_3"]}}, 
-                    function (err, res) {
-                    console.log("Everybody", err, res);
-
                 redis.sadd("ready_users", user1._id, function () {
                     
                     melter.find_matches(user1, function (err, matches) {
@@ -223,7 +218,6 @@ describe("melting", function () {
 
                 });
 
-                });
             });
             
             it("matches two available users", function (done) {
@@ -233,7 +227,8 @@ describe("melting", function () {
                     .exec(function () {
 
                         melter.find_matches(user1, function (err, matches) {
-                            matches.should.contain(user2);
+                            matches.length.should.equal(1);
+                            matches[0]._id.toString().should.equal(""+user2._id);
                             
                             done();
                         });
