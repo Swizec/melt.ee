@@ -122,11 +122,15 @@ exports.login = function(req, res) {
 
             users.findOne({linkedin_id: person.id}, function (err, user) {
 
+                var is_admin = 0;
+                if(user) {
+                    is_admin = user.is_admin;
+                }
                 // create session
                 req.session.user_sess = {
                     id : person.id,
                     name : person.firstName +' '+ person.lastName,
-                    is_admin : user.is_admin,
+                    is_admin : is_admin,
                     url : person.publicProfileUrl,
                     img_src : person.pictureUrl || '',
                     headline : person.headline || ''
