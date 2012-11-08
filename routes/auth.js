@@ -98,7 +98,7 @@ exports.login = function(req, res) {
                 headline : person.headline,
                 pictureUrl : person.pictureUrl,
                 publicUrl : person.publicProfileUrl,
-                is_admin : 0
+                is_admin : person.is_admin
             });
             
             add_connections(user, callback);
@@ -126,7 +126,7 @@ exports.login = function(req, res) {
                 req.session.user_sess = {
                     id : person.id,
                     name : person.firstName +' '+ person.lastName,
-                    is_admin : person.is_admin,
+                    is_admin : user.is_admin,
                     url : person.publicProfileUrl,
                     img_src : person.pictureUrl || '',
                     headline : person.headline || ''
