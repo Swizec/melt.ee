@@ -165,6 +165,26 @@ describe("melting", function () {
                     });
                 });
             });
+
+            it("unreadies users", function (done) {
+                var client1 = client();
+
+                client1.once("connect", function () {
+                    client1.emit("ready", user1, function () {
+                        redis.smembers("ready_users", function (err, res) {
+                            res.should.include(""+user1.id);
+
+                            client1.emit("not ready", function () {
+                                redis.smembers("ready_users", function (err, res) {
+                                    res.should.not.include(""+user1.id);
+
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                });
+            });
         });
         
     }, 300);

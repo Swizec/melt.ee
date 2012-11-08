@@ -67,7 +67,7 @@ var Events = Backbone.Collection.extend({
 
         __navigate: function (event, href) {
             event.preventDefault();
-            event.stopImmediatePropagation();
+            //event.stopImmediatePropagation();
 
             if (!href) {
                 href = $(event.target).attr("href");
@@ -93,6 +93,8 @@ var Events = Backbone.Collection.extend({
         },
 
         navigate: function (event) {
+            event.stopImmediatePropagation();
+
             var chosen = this.$el.find("select:visible").val();
             this.options.router.chosenEvent = this.Events.where({_id: chosen})[0];
 
@@ -227,27 +229,34 @@ var Events = Backbone.Collection.extend({
     var WaitingView = PageView.extend({
         template: Handlebars.compile($("#template-waiting").html()),
 
+        events: {
+            "click a.btn.changed_mind": "change_mind"
+        },
+
+        initialize: function () {
+            this.socket = io.connect();
+        },
+
         render: function () {
-            this.$el.html(this.template({in_melt: !!this.options.person_id}));
-
-            this.$el.find("a.btn").attr("href", "/ready/"+this.options.event_id);
-
             this.start_ready();
-
-            return this.$el;
+            return this.__render();
         },
 
         start_ready: function () {
-            var socket = this.socket = io.connect(),
-                me = this.options.me;
-
-            console.log(me.get("_id"));
-
-            socket.on("connect", function () {
-                socket.emit("ready", {_id: me.get("_id")}, function () {
-                    console.log("server knows we're ready");
-                });
+            var me = this.options.me;
+            
+            this.socket.emit("ready", {_id: me.get("_id")}, function () {
+                console.log("server knows we're ready");
             });
+        },
+
+        change_mind: function (event) {
+            event.stopImmediatePropagation();
+            this.socket.emit("not ready", function () {
+                console.log("server knows we aren't ready");
+            });
+
+            this.__navigate(event);
         }
     });
 
