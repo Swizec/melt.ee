@@ -126,7 +126,7 @@ exports.login = function(req, res) {
                 req.session.user_sess = {
                     id : person.id,
                     name : person.firstName +' '+ person.lastName,
-                    is_admin : user.is_admin,
+                    is_admin : person.is_admin,
                     url : person.publicProfileUrl,
                     img_src : person.pictureUrl || '',
                     headline : person.headline || ''

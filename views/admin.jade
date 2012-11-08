@@ -15,7 +15,6 @@ block content
     tr
       th Pic
       th Name
-      th Headline
       th First login
       th Topic 1
       th Topic 2
@@ -24,8 +23,8 @@ block content
     td(class="user_photo")
       a(href="{{ publicUrl }}")
         img(src="{{ pictureUrl }}")
-    td {{ firstName }} {{ lastName }}
-    td {{ headline }}
+    td
+      a(href="{{ publicUrl }}") {{ firstName }} {{ lastName }}
     td {{ creation_timestamp }}
     td {{ topic1 }}
     td {{ topic2 }}
