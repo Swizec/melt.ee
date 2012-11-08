@@ -250,6 +250,22 @@ describe("melting", function () {
                     });
             });
 
+            it("finds good match", function (done) {
+                redis.multi()
+                    .sadd("ready_users", user1._id)
+                    .sadd("ready_users", user2._id)
+                    .sadd("ready_users", user3._id)
+                    .exec(function () {
+                        
+                        melter.find_matches(user3, function (err, matches) {
+                            matches.length.should.equal(1);
+                            matches[0]._id.toString().should.equal(""+user2._id);
+                            
+                            done();
+                        });
+                    });
+            });
+
         });
         
     }, 300);
