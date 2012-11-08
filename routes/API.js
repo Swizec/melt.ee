@@ -58,7 +58,7 @@ exports.me = function (req, res) {
     var user = req.session.user_sess.id;
 
     my_data(user, function (err, result) {
-        res.send(result);
+        res.send(result[0]);
     });
 };
 

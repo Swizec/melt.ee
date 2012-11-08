@@ -8,6 +8,9 @@ var Event = Backbone.Model.extend({
 var ReadyUsers = Backbone.Model.extend({
     url: '/api/ready_users'
 });
+var Me = Backbone.Model.extend({
+    url: '/api/me'
+});
 
 var Topics = Backbone.Collection.extend({
     model: Topic,
@@ -229,7 +232,22 @@ var Events = Backbone.Collection.extend({
 
             this.$el.find("a.btn").attr("href", "/ready/"+this.options.event_id);
 
+            this.start_ready();
+
             return this.$el;
+        },
+
+        start_ready: function () {
+            var socket = this.socket = io.connect(),
+                me = this.options.me;
+
+            console.log(me.get("_id"));
+
+            socket.on("connect", function () {
+                socket.emit("ready", {_id: me.get("_id")}, function () {
+                    console.log("server knows we're ready");
+                });
+            });
         }
     });
 
@@ -276,7 +294,8 @@ var Events = Backbone.Collection.extend({
             var view = new this.pages[route]({el: this.$el,
                                               router: this.options.router,
                                               event_id: ids[0],
-                                              person_id: ids[1]});
+                                              person_id: ids[1],
+                                              me: this.options.me});
 
             view.render();
         }
@@ -284,9 +303,12 @@ var Events = Backbone.Collection.extend({
     });
 
     var router = new Router(),
+        me = new Me(),
         view = new View({router: router,
-                         el: $("div#view")});
-
+                         el: $("div#view"),
+                         me: me});
+    me.fetch();
+    
     Backbone.history.start({pushState: true, root: "/mobile/"});
 
 })(jQuery);

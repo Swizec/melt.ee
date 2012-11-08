@@ -18,7 +18,7 @@ exports.index = function (req, res) {
                 && !req.path.match(/\/topics/)) {
                 return res.redirect('/mobile/topics/events');
             }
-                    
+
             res.render('mobile.jade', req.session.user_sess);
         });
 };
