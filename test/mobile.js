@@ -77,7 +77,7 @@ describe("melting", function () {
                 transports: ['websocket'],
                 'force new connection': true
             },
-            server;
+            server, user1, user2, user3;
 
         var client = function () {
             return io.connect(settings.base_url, options);
@@ -88,14 +88,21 @@ describe("melting", function () {
             // start server
             server = require('../server').server;
             redis.del("ready_users", function (err) {
-                db.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
-                    user1.save(function () {
-                        user2.save(function () {
-                            user3.save(done);
+                db.create(user1, function () {
+                    db.create(user2, function () {
+                        db.create(user3, function () {
+                            done();
                         });
                     });
                 });
             });
+        });
+        
+        afterEach(function (done) {
+            db.remove({linkedin_id: {$in: ["test_1", "test_2", "test_3"]}}, 
+                      function (err) {
+                          done();
+                      });
         });
         
         describe("waiting for melt", function () {
@@ -202,24 +209,34 @@ describe("melting", function () {
         describe("User matching", function (done) {
             
             it("is empty when nobody", function (done) {
-                redis.sadd(user1._id, function () {
+                db.find(
+                    {linkedin_id: {$in: ["test_1", "test_2", "test_3"]}}, 
+                    function (err, res) {
+                    console.log("Everybody", err, res);
+
+                redis.sadd("ready_users", user1._id, function () {
                     
                     melter.find_matches(user1, function (err, matches) {
-                        matches.length.should.be(0);
+                        matches.length.should.equal(0);
                         done();
                     });
+
+                });
 
                 });
             });
             
             it("matches two available users", function (done) {
-                redis.sadd([user1._id, user2._id], function () {
+                redis.multi()
+                    .sadd("ready_users", user1._id)
+                    .sadd("ready_users", user2._id)
+                    .exec(function () {
 
-                    melter.find_matches(user1, function (err, matches) {
-                        matches.should.contain(user2);
-
-                        done();
-                    });
+                        melter.find_matches(user1, function (err, matches) {
+                            matches.should.contain(user2);
+                            
+                            done();
+                        });
                     
                 });
             });
