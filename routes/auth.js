@@ -110,7 +110,7 @@ exports.login = function(req, res) {
                     user.connections.push({firstName: person.firstName,
                                            lastName: person.lastName,
                                            linkedin_id: person.id,
-                                           publicUrl: person.publicUrl
+                                           publicUrl: person.publicProfileUrl
                                           });
                 });
 
