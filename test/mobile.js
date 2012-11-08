@@ -7,7 +7,8 @@ var request = require('supertest'),
     io = require('socket.io-client');
 
 var app = require('../app').app,
-    settings = require('../settings');
+    settings = require('../settings'),
+    melter = require('../lib/melter');
 
 describe('Mobile site', function () {
 
@@ -59,10 +60,19 @@ describe("melting", function () {
         var db = models.linkedin_users,
             user1 = models.linkedin_users({linkedin_id: "test_1",
                                            firstName: "Oscar",
-                                           lastName: "Wilde"}),
+                                           lastName: "Wilde",
+                                           publicUrl: "http://linkedin.com/test_1",
+                                           connections: []}),
             user2 = models.linkedin_users({linkedin_id: "test_2",
                                            firstName: "Lewis",
-                                           lastName: "Carrol"}),
+                                           lastName: "Carrol",
+                                           publicUrl: "http://linkedin.com/test_2",
+                                           connections: []}),
+            user3 = models.linkedin_users({linkedin_id: "test_3",
+                                           firstName: "Anne",
+                                           lastName: "Rice",
+                                           publicUrl: "http://linkedin.com/test_3",
+                                           connections: [user1]}),
             options ={
                 transports: ['websocket'],
                 'force new connection': true
@@ -80,7 +90,9 @@ describe("melting", function () {
             redis.del("ready_users", function (err) {
                 db.remove({linkedin_id: {$in: ["test_1", "test_2"]}}, function (err) {
                     user1.save(function () {
-                        user2.save(done);
+                        user2.save(function () {
+                            user3.save(done);
+                        });
                     });
                 });
             });
@@ -185,6 +197,33 @@ describe("melting", function () {
                     });
                 });
             });
+        });
+
+        describe("User matching", function (done) {
+            
+            it("is empty when nobody", function (done) {
+                redis.sadd(user1._id, function () {
+                    
+                    melter.find_matches(user1, function (err, matches) {
+                        matches.length.should.be(0);
+                        done();
+                    });
+
+                });
+            });
+            
+            it("matches two available users", function (done) {
+                redis.sadd([user1._id, user2._id], function () {
+
+                    melter.find_matches(user1, function (err, matches) {
+                        matches.should.contain(user2);
+
+                        done();
+                    });
+                    
+                });
+            });
+
         });
         
     }, 300);

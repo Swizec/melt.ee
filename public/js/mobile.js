@@ -252,10 +252,11 @@ var Events = Backbone.Collection.extend({
 
         change_mind: function (event) {
             event.stopImmediatePropagation();
+
             this.socket.emit("not ready", function () {
                 console.log("server knows we aren't ready");
             });
-
+            
             this.__navigate(event);
         }
     });
