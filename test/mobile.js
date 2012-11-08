@@ -261,9 +261,51 @@ describe("melting", function () {
                             matches.length.should.equal(1);
                             matches[0]._id.toString().should.equal(""+user2._id);
                             
+                            matches[0].toObject().should.have.keys(
+                                ["_id", "firstName", "lastName", "publicUrl"]);
+
                             done();
                         });
                     });
+            });
+
+        });
+
+        describe("Creating melts", function () {
+
+            it("emits melt prompt", function (done) {
+                var client1 = client(),
+                    client2 = client(),
+                    twice = 0,
+                    _done = function () {
+                        if (twice < 2) {
+                            twice += 1;
+                        }else{
+                            done();
+                        }
+                    };
+
+                client1.once("connect", function () {
+                    client1.emit("ready", user1, function () {
+                        client2.emit("ready", user2, function () {
+                            console.log("both clients ready");
+                        });
+                    });
+
+                    client1.once("melt", function (other) {
+                        other._id.toString().should.equal(""+user2._id);
+                        console.log("melting 1");
+
+                        _done();
+                    });
+
+                    client2.once("melt", function (other) {
+                        other._id.toString().should.equal(""+user1._id);
+                        console.log("melting 2");
+
+                        _done();
+                    });
+                });
             });
 
         });
