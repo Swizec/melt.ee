@@ -6,6 +6,11 @@ module.exports = function(req, res) {
         req.session.redirect = 'admin';
         res.redirect('/auth');
     } else {
-        res.render('admin.jade');
+        console.log(req.session.user_sess);
+        if(req.session.user_sess.is_admin == '1') {
+            res.render('admin.jade');
+        } else {
+            res.redirect('/');
+        }
     }
 };

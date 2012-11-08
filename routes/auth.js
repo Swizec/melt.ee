@@ -126,7 +126,7 @@ exports.login = function(req, res) {
                 req.session.user_sess = {
                     id : person.id,
                     name : person.firstName +' '+ person.lastName,
-                    is_admin : (user) ? user.is_admin : 0,
+                    is_admin : user.is_admin,
                     url : person.publicProfileUrl,
                     img_src : person.pictureUrl || '',
                     headline : person.headline || ''
@@ -182,7 +182,7 @@ exports.stub_session = function (req, res) {
                                    req.session.user_sess = {
                                        id : row.linkedin_id,
                                        name : row.firstName +' '+ row.lastName,
-                                       is_admin : 0,
+                                       is_admin : row.is_admin,
                                        url : row.publicProfileUrl,
                                        img_src : row.pictureUrl || '',
                                        headline : row.headline || ''
