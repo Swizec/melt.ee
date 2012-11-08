@@ -309,7 +309,7 @@ $(function() {
             $('#tabs').prepend(tabs.render().el);
 
             // Load user list by triggering first tab
-            $('#tabs .tab').eq(1).trigger('click');
+            $('#tabs .tab').eq(0).trigger('click');
         }
     });
 
