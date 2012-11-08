@@ -236,6 +236,20 @@ describe("melting", function () {
                 });
             });
 
+            it("doesn't match friends", function (done) {
+                redis.multi()
+                    .sadd("ready_users", user1._id)
+                    .sadd("ready_users", user3._id)
+                    .exec(function () {
+                        
+                        melter.find_matches(user3, function (err, matches) {
+                            matches.length.should.equal(0);
+
+                            done();
+                        });
+                    });
+            });
+
         });
         
     }, 300);
