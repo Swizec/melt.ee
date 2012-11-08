@@ -278,9 +278,9 @@ describe("melting", function () {
                     client2 = client(),
                     twice = 0,
                     _done = function () {
-                        if (twice < 2) {
-                            twice += 1;
-                        }else{
+                        twice += 1;
+
+                        if (twice >= 2) {
                             done();
                         }
                     };
@@ -288,20 +288,17 @@ describe("melting", function () {
                 client1.once("connect", function () {
                     client1.emit("ready", user1, function () {
                         client2.emit("ready", user2, function () {
-                            console.log("both clients ready");
                         });
                     });
 
                     client1.once("melt", function (other) {
                         other._id.toString().should.equal(""+user2._id);
-                        console.log("melting 1");
 
                         _done();
                     });
 
                     client2.once("melt", function (other) {
                         other._id.toString().should.equal(""+user1._id);
-                        console.log("melting 2");
 
                         _done();
                     });
