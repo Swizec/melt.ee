@@ -18,7 +18,10 @@ block content
           .three_topics Please tell us 3 topics you love to talk about.
             br
             span They will be shown in mobile app when you will be introduced to other event attendees.
-          .topics_shown These are your three topics that will be shown in your mobile app when meeting another atendee
+          .topics_shown Thank you for your three topics. That's all you needed to do. What now?
+            br
+            span At your next event, take your smartphone, log in at melt.ee and click "ready to meet"
+          .these_are_topics These are your three topics that will be shown in your mobile app when meeting another atendee
       tr
         th Topic #1 - I love to talk about... (5-10 words)
       tr
@@ -40,7 +43,7 @@ block content
         td.actions
           div#cancel_topics.btn.cancel_topics Cancel
           div#save_topics.btn.btn-primary.save_topics Save
-          div#edit_topics.btn.btn-primary Edit 
+          div#edit_topics.btn.btn-primary Change my topics 
   .hline
   .clearfix.middle.footer
     div Melt.ee service is operated by company 3BL d.o.o. in Slovenia, founded by&nbsp;
@@ -48,4 +51,4 @@ block content
 
 block scripts
   script(src='/load_topics.js')
-  script(src='/js/topics.js')
+  script(src='/js/topics.js?c=1')
