@@ -389,6 +389,26 @@ describe("melting", function () {
                 });
                 
             });
+
+            it("waits for free spot", function (done) {
+                
+                redis.multi()
+                    .srem("free_spots", 1) 
+                    .srem("free_spots", 2)
+                    .srem("free_spots", 3)
+                    .exec(function (err) {
+                    
+                        melter.create_melt(user1, user2, function (err, melt) {
+                            melt.spot.should.equal(2);
+                            
+                            done();
+                        });
+                        
+                        setTimeout(function () { redis.sadd("free_spots", 2); },
+                                   500);
+                });
+
+            });
         });
 
         describe("Doing melts", function () {
@@ -396,7 +416,6 @@ describe("melting", function () {
             it("finishes melts", function (done) {
                 melter.create_melt(user1, user2, function (err, melt) {
                     melter.finish_melt(melt, function (err) {
-                        console.log(err);
                         
                         models.melts.findOne({_id: melt._id}, function (err, melt) {
                             melt.finished.should.equal(true);
