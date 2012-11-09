@@ -96,17 +96,22 @@ describe("melting", function () {
         beforeEach(function (done) {
             // start server
             server = require('../server').server;
-            redis.del("ready_users", function (err) {
-                models.melts.remove(function () {
-                    db.create(user1, function () {
-                        db.create(user2, function () {
-                            db.create(user3, function () {
-                                done();
+            redis.multi()
+                .del("ready_users")
+                .sadd("free_spots", 1)
+                .sadd("free_spots", 2)
+                .sadd("free_spots", 3)
+                .exec(function (err) {
+                    models.melts.remove(function () {
+                        db.create(user1, function () {
+                            db.create(user2, function () {
+                                db.create(user3, function () {
+                                    done();
+                                });
                             });
                         });
                     });
                 });
-            });
         });
         
         afterEach(function (done) {
@@ -367,6 +372,22 @@ describe("melting", function () {
                         _done();
                     });
                 });
+            });
+
+            it("selects empty spot", function (done) {
+                
+                melter.create_melt(user1, user2, function (err, melt1) {
+                    melter.create_melt(user2, user3, function (err, melt2) {
+                        melt1.spot.should.not.equal(melt2.spot);
+
+                        redis.smembers("free_spots", function (err, spots) {
+                            spots.should.not.contain(melt1.spot, melt2.spot);
+                            
+                            done();
+                        });
+                    });
+                });
+                
             });
         });
         
