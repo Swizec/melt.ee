@@ -58,7 +58,7 @@ var Events = Backbone.Collection.extend({
         },
 
         socket: io.connect(), // creates socket all views will have access to
-        melt: {},
+        melt: new Melt(),
 
         render: function () {
             return this.__render();
@@ -241,11 +241,13 @@ var Events = Backbone.Collection.extend({
             var _this = this;
 
             this.socket.on("melt", function (melt, me_index) {
-                _this.melt = new Melt(melt);
+                _.keys(melt).map(function (key) {
+                    _this.melt.set(key, melt[key]);
+                });
                 _this.melt.set("me_index", me_index);
-
                 _this.__navigate(null, 
                                  "/handshake/"+_this.options.event_id+"/"+_this.melt.get("_id"));
+                _this.socket.emit("not ready");
             });
         },
 
@@ -274,7 +276,17 @@ var Events = Backbone.Collection.extend({
     });
 
     var HandshakeView = PageView.extend({
-        template: Handlebars.compile($("#template-handshake").html())
+        template: Handlebars.compile($("#template-handshake").html()),
+
+        render: function () {
+            var melt = this.melt,
+                other = this.melt.get("users")[(this.melt.get("me_index")+1)%2];
+
+            this.$el.html(this.template({_id: melt.get("_id"),
+                                         spot: melt.get("spot"),
+                                         other: other,
+                                         event_id: this.options.event_id}));
+        }
     });
 
     var MeltView = PageView.extend({
