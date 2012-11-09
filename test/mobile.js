@@ -278,7 +278,8 @@ describe("melting", function () {
                             matches[0]._id.toString().should.equal(""+user2._id);
                             
                             matches[0].toObject().should.have.keys(
-                                ["_id", "firstName", "lastName", "publicUrl"]);
+                                ["_id", "firstName", "lastName", "publicUrl",
+                                 "topic1", "topic2", "topic3"]);
 
                             done();
                         });
@@ -323,7 +324,7 @@ describe("melting", function () {
                     models.melts.find({},
                         function (err, melts) {
                             melts.length.should.equal(1);
-                            
+
                             melts[0].toObject().should.have.keys(
                                 ["_id", "__v", "users", "creation_time", "finish_time",
                                  "spot", "finished"]);
@@ -449,30 +450,38 @@ describe("melting", function () {
                     });
 
                     client1.once("melt", function (melt, me_index) {
+                        
+                        setTimeout(function () {
+                            client1.emit("handshake", melt._id, me_index, function () {
+                                models.melts.findById(melt._id, function (err, _melt) {
+                                    var me = _melt.users[me_index];
+                                    me.handshake_time.should.not.equal(null);
+                                    me.handshaked.should.equal(true);
 
-                        client1.emit("handshake", melt._id, me_index, function () {
-                            models.melts.findById(melt._id, function (err, _melt) {
-                                var me = _melt.users[me_index];
-                                me.handshake_time.should.not.equal(null);
-                                me.handshaked.should.equal(true);
+                                    _done(); // makes test incomplete
+                                });
                             });
-                        });
+                        }, 200);
 
-                        client2.once("hands shook", function () {
+                        client1.once("hands shook", function () {
                             _done();
                         });
                     });
 
 
                     client2.once("melt", function (melt, me_index) {
+                        
+                        setTimeout(function () {
+                            client2.emit("handshake", melt._id, me_index, function () {
+                                models.melts.findById(melt._id, function (err, _melt) {
+                                    var me = _melt.users[me_index];
+                                    me.handshake_time.should.not.equal(null);
+                                    me.handshaked.should.equal(true);
 
-                        client2.emit("handshake", melt._id, me_index, function () {
-                            models.melts.findById(melt._id, function (err, _melt) {
-                                var me = _melt.users[me_index];
-                                me.handshake_time.should.not.equal(null);
-                                me.handshaked.should.equal(true);
+                                    _done(); // makes test incomplete
+                                });
                             });
-                        });
+                        }, 100);
 
                         client2.once("hands shook", function () {
                             _done();

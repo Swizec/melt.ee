@@ -241,8 +241,6 @@ var Events = Backbone.Collection.extend({
             var _this = this;
 
             this.socket.on("melt", function (melt, me_index) {
-                console.log(me_index, melt);
-
                 _.keys(melt).map(function (key) {
                     _this.melt.set(key, melt[key]);
                 });
@@ -260,17 +258,13 @@ var Events = Backbone.Collection.extend({
         start_ready: function () {
             var me = this.options.me;
             
-            this.socket.emit("ready", {_id: me.get("_id")}, function () {
-                console.log("server knows we're ready");
-            });
+            this.socket.emit("ready", {_id: me.get("_id")});
         },
 
         change_mind: function (event) {
             event.stopImmediatePropagation();
 
-            this.socket.emit("not ready", function () {
-                console.log("server knows we aren't ready");
-            });
+            this.socket.emit("not ready");
             
             this.__navigate(event);
         }
@@ -278,6 +272,16 @@ var Events = Backbone.Collection.extend({
 
     var HandshakeView = PageView.extend({
         template: Handlebars.compile($("#template-handshake").html()),
+        waiting: Handlebars.compile($("#template-handshake-waiting").html()),
+
+        events: {
+            "click button.handshake": "handshake"
+        },
+
+        initialize: function () {
+            var _this = this;
+            this.socket.on("hands shook", function () { _this.handshaked(); });
+        },
 
         render: function () {
             var melt = this.melt,
@@ -287,6 +291,23 @@ var Events = Backbone.Collection.extend({
                                          spot: melt.get("spot"),
                                          other: other,
                                          event_id: this.options.event_id}));
+        },
+
+        handshake: function () {
+            var _this = this;
+
+            this.socket.emit("handshake", this.melt.get("_id"), this.melt.get("me_index"),
+                             function () { _this.handshaking(); });
+        },
+        
+        handshaking: function () {
+            var other = this.melt.get("users")[(this.melt.get("me_index")+1)%2];
+
+            this.$el.find("div.waiting").html(this.waiting(other));
+        },
+
+        handshaked: function () {
+            console.log("hands were shaken");
         }
     });
 

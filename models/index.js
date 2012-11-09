@@ -34,7 +34,7 @@ var conference_schema = new mongoose.Schema({
 var melter_schema = new mongoose.Schema({
     firstName: String,
     lastName: String,
-    topics: [String],
+    topics: [{type: String, default: ""}],
     handshake_time: {type: Date, default: null},
     handshaked: {type: Boolean, default: false}
 });
@@ -44,7 +44,7 @@ var melt_schema = new mongoose.Schema({
     creation_time: {type: Date, default: Date.now},
     finish_time: {type: Date, default: null},
     spot: Number,
-    finished: Boolean
+    finished: {type: Boolean, default: false}
     
 });
 
