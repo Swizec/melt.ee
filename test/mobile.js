@@ -409,6 +409,7 @@ describe("melting", function () {
                 });
 
             });
+
         });
 
         describe("Doing melts", function () {
