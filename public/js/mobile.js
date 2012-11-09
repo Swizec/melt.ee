@@ -11,6 +11,7 @@ var ReadyUsers = Backbone.Model.extend({
 var Me = Backbone.Model.extend({
     url: '/api/me'
 });
+var Melt = Backbone.Model.extend({});
 
 var Topics = Backbone.Collection.extend({
     model: Topic,
@@ -43,8 +44,8 @@ var Events = Backbone.Collection.extend({
             "topics/*back": "topics",
             "ready/:event_id": "ready",
             "waiting/:event_id": "waiting",
-            "waiting/:event_id/:person": "waiting",
-            "handshake/:event_id/:person": "handshake",
+            "waiting/:event_id/:melt": "waiting",
+            "handshake/:event_id/:melt": "handshake",
             "melt/:event_id/:person": "melt",
             "thanks": "thanks"
         }
@@ -57,6 +58,7 @@ var Events = Backbone.Collection.extend({
         },
 
         socket: io.connect(), // creates socket all views will have access to
+        melt: {},
 
         render: function () {
             return this.__render();
@@ -68,7 +70,7 @@ var Events = Backbone.Collection.extend({
         },
 
         __navigate: function (event, href) {
-            event.preventDefault();
+            if (event) event.preventDefault();
             //event.stopImmediatePropagation();
 
             if (!href) {
@@ -236,8 +238,14 @@ var Events = Backbone.Collection.extend({
         },
 
         initialize: function () {
+            var _this = this;
+
             this.socket.on("melt", function (melt, me_index) {
-                console.log(melt);
+                _this.melt = new Melt(melt);
+                _this.melt.set("me_index", me_index);
+
+                _this.__navigate(null, 
+                                 "/handshake/"+_this.options.event_id+"/"+_this.melt.get("_id"));
             });
         },
 
