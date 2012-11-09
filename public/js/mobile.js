@@ -56,6 +56,8 @@ var Events = Backbone.Collection.extend({
             "click a.btn": "__navigate"
         },
 
+        socket: io.connect(), // creates socket all views will have access to
+
         render: function () {
             return this.__render();
         },
@@ -234,7 +236,9 @@ var Events = Backbone.Collection.extend({
         },
 
         initialize: function () {
-            this.socket = io.connect();
+            this.socket.on("melt", function (melt, me_index) {
+                console.log(melt);
+            });
         },
 
         render: function () {
