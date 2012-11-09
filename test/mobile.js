@@ -390,6 +390,31 @@ describe("melting", function () {
                 
             });
         });
+
+        describe("Doing melts", function () {
+
+            it("finishes melts", function (done) {
+                melter.create_melt(user1, user2, function (err, melt) {
+                    melter.finish_melt(melt, function (err) {
+                        console.log(err);
+                        
+                        models.melts.findOne({_id: melt._id}, function (err, melt) {
+                            melt.finished.should.equal(true);
+                            melt.finish_time.should.not.equal(null);
+
+                            redis.smembers("free_spots", function (err, spots) {
+                                spots.should.contain(""+melt.spot);
+                            });
+
+                            done();
+                            
+                        });
+
+                    });
+                });
+            });
+
+        });
         
     }, 300);
 });
