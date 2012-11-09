@@ -304,7 +304,7 @@ describe("melting", function () {
 
                     client1.once("melt", function (other) {
                         other._id.toString().should.equal(""+user2._id);
-
+                        
                         _done();
                     });
 
@@ -317,37 +317,27 @@ describe("melting", function () {
             });
 
             it("creates a melt", function (done) {
-                var client1 = client(),
-                    client2 = client();
-
-                client1.once("connect", function () {
-                    client1.emit("ready", user1);
-                    client2.emit("ready", user2);
-
-                    client1.once("melt", function (other) {
-                        models.melts.find({$and: [{"users[0]._id": ""+user1._id},
-                                                  {"users[1]._id": ""+user2._id}]},
-                            function (err, melts) {
-                                console.log(err, melts);
-                                melts.length.should.equal(1);
-                                
-                                melts[0].toObject().should.have.keys(
-                                    ["_id", "users", "creation_time", "finish_time",
-                                     "spot", "finished"]);
-                                
-                                melts[0].users.map(function (user) {
-                                    user.toObject().should.have.keys(
-                                        ["_id", "topics", "firstName", "lastName", 
-                                         "handshake_time"]);
-                                });
-
-                                done();
+                
+                melter.create_melt(user1, user2, function () {
+                    models.melts.find({},
+                        function (err, melts) {
+                            melts.length.should.equal(1);
+                            
+                            melts[0].toObject().should.have.keys(
+                                ["_id", "__v", "users", "creation_time", "finish_time",
+                                 "spot", "finished"]);
+                            
+                            melts[0].users.map(function (user) {
+                                user.toObject().should.have.keys(
+                                    ["_id", "topics", "firstName", "lastName", 
+                                     "handshake_time"]);
                             });
-
-                    });
+                            
+                            done();
+                        });
+                    
                 });
             });
-
         });
         
     }, 300);

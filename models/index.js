@@ -33,7 +33,7 @@ var conference_schema = new mongoose.Schema({
 
 var melter_schema = new mongoose.Schema({
     firstName: String,
-    lastname: String,
+    lastName: String,
     topics: [String],
     handshake_time: {type: Date, default: null}
 });
