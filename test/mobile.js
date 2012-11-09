@@ -331,7 +331,7 @@ describe("melting", function () {
                             melts[0].users.map(function (user) {
                                 user.toObject().should.have.keys(
                                     ["_id", "topics", "firstName", "lastName", 
-                                     "handshake_time"]);
+                                     "handshake_time", "handshaked"]);
                             });
                             
                             done();
@@ -433,6 +433,66 @@ describe("melting", function () {
                     });
                 });
             });
+
+            /*it("does handshakes", function (done) {
+                var client1 = client(),
+                    client2 = client(),
+                    twice = 0,
+                    _done = function () {
+                        twice += 1;
+
+                        if (twice >= 2) {
+                            done();
+                        }
+                    };
+
+                console.log("TESTING HANDSHAKE");
+
+                client1.once("connect", function () {
+                    console.log("emitting ready");
+                    client1.emit("ready", user1);
+                    client2.emit("ready", user2);
+                    console.log("done emitting ready");
+
+                    client1.once("melt", function (melt, me_index) {
+                        console.log("handshaking", me_index, melt);
+
+                        client1.emit("handshake", melt._id, me_index, function () {
+                            models.melts.findById(melt._id, function (err, _melt) {
+                                var me = _melt.users[me_index];
+                                me.handshake_time.should.not.equal(null);
+                                me.handshaked.should.equal(true);
+
+                                console.log("user1 shaked");
+                            });
+                        });
+
+                        client2.once("hands shook", function () {
+                            _done();
+                        });
+                    });
+
+
+                    client2.once("melt", function (melt, me_index) {
+                        console.log("handshaking", me_index, melt);
+
+                        client2.emit("handshake", melt._id, me_index, function () {
+                            models.melts.findById(melt._id, function (err, _melt) {
+                                var me = _melt.users[me_index];
+                                me.handshake_time.should.not.equal(null);
+                                me.handshaked.should.equal(true);
+
+                                console.log("user2 shaked");
+                            });
+                        });
+
+                        client2.once("hands shook", function () {
+                            _done();
+                        });
+                    });
+                });
+
+            });*/
 
         });
         
