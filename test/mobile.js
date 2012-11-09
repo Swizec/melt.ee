@@ -62,22 +62,31 @@ describe("melting", function () {
                                            firstName: "Oscar",
                                            lastName: "Wilde",
                                            publicUrl: "http://linkedin.com/test_1",
-                                           connections: []}),
+                                           connections: [],
+                                           topic1: "a",
+                                           topic2: "b",
+                                           topic3: "c"}),
             user2 = models.linkedin_users({linkedin_id: "test_2",
                                            firstName: "Lewis",
                                            lastName: "Carrol",
                                            publicUrl: "http://linkedin.com/test_2",
-                                           connections: []}),
+                                           connections: [],
+                                           topic1: "a",
+                                           topic2: "b",
+                                           topic3: "c"}),
             user3 = models.linkedin_users({linkedin_id: "test_3",
                                            firstName: "Anne",
                                            lastName: "Rice",
                                            publicUrl: "http://linkedin.com/test_3",
-                                           connections: [user1]}),
+                                           connections: [user1],
+                                           topic1: "a",
+                                           topic2: "b",
+                                           topic3: "c"}),
             options ={
                 transports: ['websocket'],
                 'force new connection': true
             },
-            server, user1, user2, user3;
+            server;
 
         var client = function () {
             return io.connect(settings.base_url, options);
@@ -88,10 +97,12 @@ describe("melting", function () {
             // start server
             server = require('../server').server;
             redis.del("ready_users", function (err) {
-                db.create(user1, function () {
-                    db.create(user2, function () {
-                        db.create(user3, function () {
-                            done();
+                models.melts.remove(function () {
+                    db.create(user1, function () {
+                        db.create(user2, function () {
+                            db.create(user3, function () {
+                                done();
+                            });
                         });
                     });
                 });
@@ -301,6 +312,38 @@ describe("melting", function () {
                         other._id.toString().should.equal(""+user1._id);
 
                         _done();
+                    });
+                });
+            });
+
+            it("creates a melt", function (done) {
+                var client1 = client(),
+                    client2 = client();
+
+                client1.once("connect", function () {
+                    client1.emit("ready", user1);
+                    client2.emit("ready", user2);
+
+                    client1.once("melt", function (other) {
+                        models.melts.find({$and: [{"users[0]._id": ""+user1._id},
+                                                  {"users[1]._id": ""+user2._id}]},
+                            function (err, melts) {
+                                console.log(err, melts);
+                                melts.length.should.equal(1);
+                                
+                                melts[0].toObject().should.have.keys(
+                                    ["_id", "users", "creation_time", "finish_time",
+                                     "spot", "finished"]);
+                                
+                                melts[0].users.map(function (user) {
+                                    user.toObject().should.have.keys(
+                                        ["_id", "topics", "firstName", "lastName", 
+                                         "handshake_time"]);
+                                });
+
+                                done();
+                            });
+
                     });
                 });
             });

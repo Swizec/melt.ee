@@ -31,13 +31,32 @@ var conference_schema = new mongoose.Schema({
     active : Boolean
 });
 
+var melter_schema = new mongoose.Schema({
+    firstName: String,
+    lastname: String,
+    topics: [String],
+    handshake_time: {type: Date, default: null}
+});
+
+var melt_schema = new mongoose.Schema({
+    users: [melter_schema],
+    creation_time: {type: Date, default: Date.now},
+    finish_time: {type: Date, default: null},
+    spot: Number,
+    finished: Boolean
+    
+});
+
+
 db.once('open', function() {
     exports.linkedin_users = db.model('linkedin_users', users_schema);
     exports.conferences = db.model('conferences', conference_schema);
+    exports.melts = db.model('melts', melt_schema);
     
     exports.schemas = {
         user: users_schema,
         conference: conference_schema,
-        people: people_schema
+        people: people_schema,
+        melt: melt_schema
     };
 });
