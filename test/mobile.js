@@ -140,11 +140,11 @@ describe("melting", function () {
             });
 
             it("counts available melters", function (done) {
-                var client1 = client(), 
+                var client1 = client(),
                     client2 = client();
                 client1.once("connect", function () {
                     client1.emit("ready", user1, function () {
-                        client2.emit("ready", user2, function () {
+                        client2.emit("ready", user3, function () {
 
                             request(app)
                                 .get('/api/ready_users')
@@ -169,10 +169,10 @@ describe("melting", function () {
                         redis.smembers("ready_users", function (err, res) {
                             res.should.include(""+user1.id);
 
-                            client2.emit("ready", user2, function () {
+                            client2.emit("ready", user3, function () {
                                 redis.smembers("ready_users", function (err, res) {
                                     res.should.include(""+user1.id);
-                                    res.should.include(""+user2.id);
+                                    res.should.include(""+user3.id);
                                     done();
                                 });
                             });
@@ -331,7 +331,7 @@ describe("melting", function () {
                             melts[0].users.map(function (user) {
                                 user.toObject().should.have.keys(
                                     ["_id", "topics", "firstName", "lastName", 
-                                     "handshake_time"]);
+                                     "handshake_time", "handshaked"]);
                             });
                             
                             done();
@@ -354,8 +354,9 @@ describe("melting", function () {
                     };
 
                 client1.once("connect", function () {
-                    client1.emit("ready", user1);
-                    client2.emit("ready", user2);
+                    client1.emit("ready", user1, function () {
+                        client2.emit("ready", user2);
+                    });
 
                     client1.once("melt", function (melt, me_index) {
                         melt.should.have.keys(["_id", "spot", "users"]);
@@ -392,20 +393,16 @@ describe("melting", function () {
 
             it("waits for free spot", function (done) {
                 
-                redis.multi()
-                    .srem("free_spots", 1) 
-                    .srem("free_spots", 2)
-                    .srem("free_spots", 3)
-                    .exec(function (err) {
+                redis.del("free_spots", function (err) {
                     
-                        melter.create_melt(user1, user2, function (err, melt) {
-                            melt.spot.should.equal(2);
-                            
-                            done();
-                        });
+                    melter.create_melt(user1, user2, function (err, melt) {
+                        melt.spot.should.equal(2);
                         
-                        setTimeout(function () { redis.sadd("free_spots", 2); },
-                                   500);
+                        done();
+                    });
+                    
+                    setTimeout(function () { redis.sadd("free_spots", 2); },
+                               500);
                 });
 
             });
@@ -432,6 +429,57 @@ describe("melting", function () {
 
                     });
                 });
+            });
+
+            it("does handshakes", function (done) {
+                var client1 = client(),
+                    client2 = client(),
+                    twice = 0,
+                    _done = function () {
+                        twice += 1;
+
+                        if (twice >= 2) {
+                            done();
+                        }
+                    };
+
+                client1.once("connect", function () {
+                    client1.emit("ready", user1, function () {
+                        client2.emit("ready", user2);
+                    });
+
+                    client1.once("melt", function (melt, me_index) {
+
+                        client1.emit("handshake", melt._id, me_index, function () {
+                            models.melts.findById(melt._id, function (err, _melt) {
+                                var me = _melt.users[me_index];
+                                me.handshake_time.should.not.equal(null);
+                                me.handshaked.should.equal(true);
+                            });
+                        });
+
+                        client2.once("hands shook", function () {
+                            _done();
+                        });
+                    });
+
+
+                    client2.once("melt", function (melt, me_index) {
+
+                        client2.emit("handshake", melt._id, me_index, function () {
+                            models.melts.findById(melt._id, function (err, _melt) {
+                                var me = _melt.users[me_index];
+                                me.handshake_time.should.not.equal(null);
+                                me.handshaked.should.equal(true);
+                            });
+                        });
+
+                        client2.once("hands shook", function () {
+                            _done();
+                        });
+                    });
+                });
+
             });
 
         });

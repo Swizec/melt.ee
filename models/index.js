@@ -35,7 +35,8 @@ var melter_schema = new mongoose.Schema({
     firstName: String,
     lastName: String,
     topics: [String],
-    handshake_time: {type: Date, default: null}
+    handshake_time: {type: Date, default: null},
+    handshaked: {type: Boolean, default: false}
 });
 
 var melt_schema = new mongoose.Schema({
