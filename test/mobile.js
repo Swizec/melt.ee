@@ -302,15 +302,11 @@ describe("melting", function () {
                         });
                     });
 
-                    client1.once("melt", function (other) {
-                        other._id.toString().should.equal(""+user2._id);
-                        
+                    client1.once("melt", function (melt, me_index) {
                         _done();
                     });
 
-                    client2.once("melt", function (other) {
-                        other._id.toString().should.equal(""+user1._id);
-
+                    client2.once("melt", function (melt, me_index) {
                         _done();
                     });
                 });
@@ -336,6 +332,40 @@ describe("melting", function () {
                             done();
                         });
                     
+                });
+            });
+
+            it("tells client melt data", function (done) {
+                
+                var client1 = client(),
+                    client2 = client(),
+                    twice = 0,
+                    _done = function () {
+                        twice += 1;
+
+                        if (twice >= 2) {
+                            done();
+                        }
+                    };
+
+                client1.once("connect", function () {
+                    client1.emit("ready", user1);
+                    client2.emit("ready", user2);
+
+                    client1.once("melt", function (melt, me_index) {
+                        melt.should.have.keys(["_id", "spot", "users"]);
+                        melt.users[me_index]._id.should.equal(""+user1._id);
+                        
+                        _done();
+                    });
+
+
+                    client2.once("melt", function (melt, me_index) {
+                        melt.should.have.keys(["_id", "spot", "users"]);
+                        melt.users[me_index]._id.should.equal(""+user2._id);
+
+                        _done();
+                    });
                 });
             });
         });
