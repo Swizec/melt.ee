@@ -210,6 +210,13 @@ var Events = Backbone.Collection.extend({
         initialize: function () {
             this.model = new ReadyUsers();
             this.model.on("change", this.number, this);
+
+            var _this = this;
+            this.socket.on("new ready", function () {
+                if (_this.$el.find(":visible").size()) {
+                    _this.model.fetch();
+                }
+            });
         },
 
         render: function () {
