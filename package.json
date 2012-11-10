@@ -1,6 +1,6 @@
 {
   "name": "melt.ee",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A thing for people to get together at conferences",
   "main": "server/main_server.js",
   "dependencies": {
