@@ -9,7 +9,7 @@ exports.auth = function(req, res){
                       "qm2c7dg5f6p4",
                       "XbD1qO2THjiWZyrt",
                       "1.0",
-                      settings.base_url+"/access_token",
+                      settings.base_url(req)+"/access_token",
                       "HMAC-SHA1");
 
     oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
