@@ -15,16 +15,18 @@ block content
     tr
       th Pic
       th Name
+      th Email
       th First login
       th Topic 1
       th Topic 2
       th Topic 3
   script(id="linkedin_users_list_row", type="text/x-handlebars-template")
     td(class="user_photo")
-      a(href="{{ publicUrl }}")
+      a(href="{{ publicUrl }}",target="_blank")
         img(src="{{ pictureUrl }}")
     td
-      a(href="{{ publicUrl }}") {{ firstName }} {{ lastName }}
+      a(href="{{ publicUrl }}",target="_blank") {{ firstName }} {{ lastName }}
+    td {{ email }}
     td {{ creation_timestamp }}
     td {{ topic1 }}
     td {{ topic2 }}

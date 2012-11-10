@@ -2,7 +2,7 @@ var OAuth = require('oauth').OAuth,
     Linkedin = require('../lib/linkedin').Linkedin;
 
 exports.auth = function(req, res){
-    var getRequestTokenUrl = "https://api.linkedin.com/uas/oauth/requestToken?scope=r_network";
+    var getRequestTokenUrl = "https://api.linkedin.com/uas/oauth/requestToken?scope=r_network+r_emailaddress";
 
     var oa = new OAuth(getRequestTokenUrl,
                       "https://api.linkedin.com/uas/oauth/accessToken",
@@ -98,6 +98,7 @@ exports.login = function(req, res) {
                 headline : person.headline,
                 pictureUrl : person.pictureUrl,
                 publicUrl : person.publicProfileUrl,
+                email : person.emailAddress,
                 is_admin : person.is_admin
             });
             
@@ -133,7 +134,8 @@ exports.login = function(req, res) {
                     is_admin : is_admin,
                     url : person.publicProfileUrl,
                     img_src : person.pictureUrl || '',
-                    headline : person.headline || ''
+                    headline : person.headline || '',
+                    email : person.emailAddress || ''
                 };
 
                 if (!user) {
@@ -189,7 +191,8 @@ exports.stub_session = function (req, res) {
                                        is_admin : row.is_admin,
                                        url : row.publicProfileUrl,
                                        img_src : row.pictureUrl || '',
-                                       headline : row.headline || ''
+                                       headline : row.headline || '',
+                                       email : row.email
                                    };
 
                                    
