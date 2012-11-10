@@ -328,6 +328,8 @@ var Events = Backbone.Collection.extend({
                                          }),
                                          me: me}));
 
+            this.socket.emit("melting", this.melt.get("_id"), this.options.person_id);
+
             this.counter(5);
         },
 
@@ -347,7 +349,6 @@ var Events = Backbone.Collection.extend({
 
         switch: function () {
             var id = (this.options.person_id+1)%2;
-            console.log("switching to", id);
             this.__navigate(null, "/melt/"+this.melt.get("_id")+"/"+id);
         }
     });

@@ -375,7 +375,7 @@ describe("melting", function () {
                             melts[0].users.map(function (user) {
                                 user.toObject().should.have.keys(
                                     ["_id", "topics", "firstName", "lastName", 
-                                     "handshake_time", "handshaked"]);
+                                     "handshake_time", "handshaked", "melted"]);
                             });
                             
                             done();
@@ -532,6 +532,48 @@ describe("melting", function () {
                     });
                 });
 
+            });
+
+            it("counts person switches", function (done) {
+                var client1 = client(),
+                    client2 = client(),
+                    twice = 0,
+                    _done = function () {
+                        twice += 1;
+
+                        if (twice >= 2) {
+                            done();
+                        }
+                    };
+
+                client1.once("connect", function () {
+                    client1.emit("ready", user1, function () {
+                        client2.emit("ready", user2);
+                    });
+
+                    client1.once("melt", function (melt, me_index) {
+                        
+                        client1.emit("melting", melt._id, 0, function () {
+                            client1.emit("melting", melt._id, 1);
+                        });
+
+                        client1.once("finish melting", function () {
+                            _done();
+                        });
+                    });
+
+
+                    client2.once("melt", function (melt, me_index) {
+                        
+                        client2.emit("melting", melt._id, 0, function() {
+                            client2.emit("melting", melt._id, 1);
+                        });
+
+                        client2.once("finish melting", function () {
+                            _done();
+                        });
+                    });
+                });
             });
 
         });
