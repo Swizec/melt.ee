@@ -2,18 +2,21 @@
 div.row
   div.span4
     p.lead OK, now please immediately come to&nbsp;
-      strong Melt.ee Spot 3
+      strong Melt.ee Spot {{spot}}
     div.center
       p You will be introduced to
       p.lead
-        strong Matej Rifelj
+        strong {{other.firstName}} {{other.lastName}}
 
     hr
 
 div.row
   div.span4.center
-    p Once you have shaken hands with Matej Rifelj,&nbsp;
+    p Once you have shaken hands with {{other.firstName}} {{other.lastName}} ,&nbsp;
       strong please confirm
       &nbsp;it here
     div
-      a.btn.btn-primary.btn-large(href="/waiting/{{event_id}}/{{person_id}}") Hand shaken!
+      button.btn.btn-primary.btn-large.handshake Hand shaken!
+
+      p &nbsp;
+      div.waiting

@@ -69,6 +69,11 @@ describe('Auth', function () {
                             function (err, res) {
                                 res[0].connections.should.have.length.above(5);
 
+                                ["firstName", "lastName", 
+                                 "publicUrl", "linkedin_id"].map(function (key) {
+                                    res[0].connections[0].should.have.property(key);
+                                });
+                                
                                 done();
                             });
                     });

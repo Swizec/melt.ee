@@ -1,5 +1,4 @@
 $(function() {
-console.log(topics);
     (function position_buttons() {
         window.scrollTo(0, window.scrollY);
     })();
@@ -35,6 +34,9 @@ console.log(topics);
         $('#cancel_topics').show();
         $('#edit_topics').hide();
         $('#topic1').focus();
+        $('.these_are_topics').hide();
+        $('.topics_shown').hide();
+        $('.three_topics').show();
     }
 
 
@@ -60,11 +62,16 @@ console.log(topics);
         $('#save_topics').hide();
         $('#cancel_topics').hide();
         $('#edit_topics').css('display', 'inline');
+        $('.topics_shown').hide();
+        $('.three_topics').hide();
+        $('.these_are_topics').show();
+
     }
 
     function done_edit() {
         $('.topics_shown').show();
         $('.three_topics').hide();
+        $('.these_are_topics').hide();
     }
 
     if(topics.topic1 || topics.topic2 || topics.topic3) {

@@ -8,6 +8,10 @@ var Event = Backbone.Model.extend({
 var ReadyUsers = Backbone.Model.extend({
     url: '/api/ready_users'
 });
+var Me = Backbone.Model.extend({
+    url: '/api/me'
+});
+var Melt = Backbone.Model.extend({});
 
 var Topics = Backbone.Collection.extend({
     model: Topic,
@@ -40,10 +44,10 @@ var Events = Backbone.Collection.extend({
             "topics/*back": "topics",
             "ready/:event_id": "ready",
             "waiting/:event_id": "waiting",
-            "waiting/:event_id/:person": "waiting",
-            "handshake/:event_id/:person": "handshake",
-            "melt/:event_id/:person": "melt",
-            "thanks": "thanks"
+            "waiting/:event_id/:melt": "waiting",
+            "handshake/:event_id/:melt": "handshake",
+            "melt/:event_id/:melt/:person": "melt",
+            "thanks/:event_id": "thanks"
         }
     });
 
@@ -52,6 +56,9 @@ var Events = Backbone.Collection.extend({
         events: {
             "click a.btn": "__navigate"
         },
+
+        socket: io.connect(), // creates socket all views will have access to
+        melt: new Melt(),
 
         render: function () {
             return this.__render();
@@ -63,8 +70,8 @@ var Events = Backbone.Collection.extend({
         },
 
         __navigate: function (event, href) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
+            if (event) event.preventDefault();
+            //event.stopImmediatePropagation();
 
             if (!href) {
                 href = $(event.target).attr("href");
@@ -90,6 +97,8 @@ var Events = Backbone.Collection.extend({
         },
 
         navigate: function (event) {
+            event.stopImmediatePropagation();
+
             var chosen = this.$el.find("select:visible").val();
             this.options.router.chosenEvent = this.Events.where({_id: chosen})[0];
 
@@ -201,6 +210,13 @@ var Events = Backbone.Collection.extend({
         initialize: function () {
             this.model = new ReadyUsers();
             this.model.on("change", this.number, this);
+
+            var _this = this;
+            this.socket.on("new ready", function () {
+                if (_this.$el.find(":visible").size()) {
+                    _this.model.fetch();
+                }
+            });
         },
 
         render: function () {
@@ -224,21 +240,142 @@ var Events = Backbone.Collection.extend({
     var WaitingView = PageView.extend({
         template: Handlebars.compile($("#template-waiting").html()),
 
+        events: {
+            "click a.btn.changed_mind": "change_mind"
+        },
+
+        initialize: function () {
+            var _this = this;
+
+            this.socket.on("melt", function (melt, me_index) {
+                _.keys(melt).map(function (key) {
+                    _this.melt.set(key, melt[key]);
+                });
+                _this.melt.set("me_index", me_index);
+                _this.__navigate(null, 
+                                 "/handshake/"+_this.options.event_id+"/"+_this.melt.get("_id"));
+            });
+        },
+
         render: function () {
-            this.$el.html(this.template({in_melt: !!this.options.person_id}));
+            this.start_ready();
+            return this.__render();
+        },
 
-            this.$el.find("a.btn").attr("href", "/ready/"+this.options.event_id);
+        start_ready: function () {
+            var me = this.options.me;
+            
+            this.socket.emit("ready", {_id: me.get("_id")});
+        },
 
-            return this.$el;
+        change_mind: function (event) {
+            event.stopImmediatePropagation();
+
+            this.socket.emit("not ready");
+            
+            this.__navigate(event);
         }
     });
 
     var HandshakeView = PageView.extend({
-        template: Handlebars.compile($("#template-handshake").html())
+        template: Handlebars.compile($("#template-handshake").html()),
+        waiting: Handlebars.compile($("#template-handshake-waiting").html()),
+
+        events: {
+            "click button.handshake": "handshake"
+        },
+
+        initialize: function () {
+            var _this = this;
+            this.socket.on("hands shook", function () { _this.handshaked(); });
+        },
+
+        render: function () {
+            var melt = this.melt,
+                other = this.melt.get("users")[(this.melt.get("me_index")+1)%2];
+
+            this.$el.html(this.template({_id: melt.get("_id"),
+                                         spot: melt.get("spot"),
+                                         other: other,
+                                         event_id: this.options.event_id}));
+        },
+
+        handshake: function () {
+            var _this = this;
+
+            this.socket.emit("handshake", this.melt.get("_id"), this.melt.get("me_index"),
+                             function () { _this.handshaking(); });
+        },
+        
+        handshaking: function () {
+            var other = this.melt.get("users")[(this.melt.get("me_index")+1)%2];
+
+            this.$el.find("div.waiting").html(this.waiting(other));
+        },
+
+        handshaked: function () {
+            this.__navigate(null, "/melt/"+this.options.event_id+"/"+this.melt.get("_id")+"/0");
+        }
     });
 
     var MeltView = PageView.extend({
-        template: Handlebars.compile($("#template-melt").html())
+        template: Handlebars.compile($("#template-melt").html()),
+
+        active: false,
+
+        initialize: function () {
+            var _this = this;
+
+            this.socket.on("finish melting", function () {
+                _this.finish();
+            });
+        },
+
+        render: function () {
+            this.active = true;
+
+            var person = this.melt.get("users")[this.options.person_index],
+                other = this.melt.get("users")[(this.options.person_index+1)%2],
+                me = this.melt.get("me_index") == this.options.person_id;
+
+            this.$el.html(this.template({now: person,
+                                         other: other,
+                                         // handlebars can only handle array access
+                                         // if not last property on path
+                                         topics: person.topics.map(function (topic) {
+                                             return {s: topic};
+                                         }),
+                                         me: me}));
+
+            this.counter(100);
+        },
+
+        counter: function (N) {
+            var _this = this;
+
+            this.$el.find(".counter").html(N);
+            
+            if (N <= 0) {
+                this.socket.emit("melted", this.melt.get("_id"), this.options.person_index);
+                if (this.active) {
+                    this.switch();
+                }
+            }else{
+                setTimeout(function () {
+                    _this.counter(N-1);
+                }, 1000);
+            }
+        },
+
+        switch: function () {
+            var id = (this.options.person_index+1)%2;
+            this.__navigate(null, "/melt/"+this.options.event_id+"/"+this.melt.get("_id")+"/"+id);
+        },
+
+        finish: function () {
+            this.active = false;
+            this.__navigate(null, "/thanks/"+this.options.event_id);
+        }
     });
 
     var ThanksView = PageView.extend({
@@ -273,10 +410,20 @@ var Events = Backbone.Collection.extend({
                 chosen.fetch();
             }
 
-            var view = new this.pages[route]({el: this.$el,
-                                              router: this.options.router,
-                                              event_id: ids[0],
-                                              person_id: ids[1]});
+            if (ids.length < 3) {
+                var view = new this.pages[route]({el: this.$el,
+                                                  router: this.options.router,
+                                                  event_id: ids[0],
+                                                  person_id: ids[1],
+                                                  me: this.options.me});
+            }else{
+                var view = new this.pages[route]({el: this.$el,
+                                                  router: this.options.router,
+                                                  event_id: ids[0],
+                                                  melt_id: ids[1],
+                                                  person_index: ids[2],
+                                                  me: this.options.me});
+            }
 
             view.render();
         }
@@ -284,9 +431,12 @@ var Events = Backbone.Collection.extend({
     });
 
     var router = new Router(),
+        me = new Me(),
         view = new View({router: router,
-                         el: $("div#view")});
-
+                         el: $("div#view"),
+                         me: me});
+    me.fetch();
+    
     Backbone.history.start({pushState: true, root: "/mobile/"});
 
 })(jQuery);
