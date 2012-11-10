@@ -46,8 +46,8 @@ var Events = Backbone.Collection.extend({
             "waiting/:event_id": "waiting",
             "waiting/:event_id/:melt": "waiting",
             "handshake/:event_id/:melt": "handshake",
-            "melt/:melt/:person": "melt",
-            "thanks": "thanks"
+            "melt/:event_id/:melt/:person": "melt",
+            "thanks/:event_id": "thanks"
         }
     });
 
@@ -241,7 +241,6 @@ var Events = Backbone.Collection.extend({
             var _this = this;
 
             this.socket.on("melt", function (melt, me_index) {
-                console.log("GOT A MELT");
                 _.keys(melt).map(function (key) {
                     _this.melt.set(key, melt[key]);
                 });
@@ -308,8 +307,7 @@ var Events = Backbone.Collection.extend({
         },
 
         handshaked: function () {
-            console.log("handshaked!");
-            this.__navigate(null, "/melt/"+this.melt.get("_id")+"/0");
+            this.__navigate(null, "/melt/"+this.options.event_id+"/"+this.melt.get("_id")+"/0");
         }
     });
 
@@ -329,8 +327,8 @@ var Events = Backbone.Collection.extend({
         render: function () {
             this.active = true;
 
-            var person = this.melt.get("users")[this.options.person_id],
-                other = this.melt.get("users")[(this.options.person_id+1)%2],
+            var person = this.melt.get("users")[this.options.person_index],
+                other = this.melt.get("users")[(this.options.person_index+1)%2],
                 me = this.melt.get("me_index") == this.options.person_id;
 
             this.$el.html(this.template({now: person,
@@ -351,7 +349,7 @@ var Events = Backbone.Collection.extend({
             this.$el.find(".counter").html(N);
             
             if (N <= 0) {
-                this.socket.emit("melted", this.melt.get("_id"), this.options.person_id);
+                this.socket.emit("melted", this.melt.get("_id"), this.options.person_index);
                 if (this.active) {
                     this.switch();
                 }
@@ -363,13 +361,13 @@ var Events = Backbone.Collection.extend({
         },
 
         switch: function () {
-            var id = (this.options.person_id+1)%2;
-            this.__navigate(null, "/melt/"+this.melt.get("_id")+"/"+id);
+            var id = (this.options.person_index+1)%2;
+            this.__navigate(null, "/melt/"+this.options.event_id+"/"+this.melt.get("_id")+"/"+id);
         },
 
         finish: function () {
             this.active = false;
-            this.__navigate(null, "/thanks");
+            this.__navigate(null, "/thanks/"+this.options.event_id);
         }
     });
 
@@ -405,11 +403,20 @@ var Events = Backbone.Collection.extend({
                 chosen.fetch();
             }
 
-            var view = new this.pages[route]({el: this.$el,
-                                              router: this.options.router,
-                                              event_id: ids[0],
-                                              person_id: ids[1],
-                                              me: this.options.me});
+            if (ids.length < 3) {
+                var view = new this.pages[route]({el: this.$el,
+                                                  router: this.options.router,
+                                                  event_id: ids[0],
+                                                  person_id: ids[1],
+                                                  me: this.options.me});
+            }else{
+                var view = new this.pages[route]({el: this.$el,
+                                                  router: this.options.router,
+                                                  event_id: ids[0],
+                                                  melt_id: ids[1],
+                                                  person_index: ids[2],
+                                                  me: this.options.me});
+            }
 
             view.render();
         }
