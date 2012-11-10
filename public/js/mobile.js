@@ -1,4 +1,6 @@
 
+
+
 var Topic = Backbone.Model.extend({});
 var Event = Backbone.Model.extend({
     url: function () {
@@ -322,7 +324,7 @@ var Events = Backbone.Collection.extend({
         template: Handlebars.compile($("#template-melt").html()),
 
         active: false,
-
+    
         initialize: function () {
             var _this = this;
 
@@ -358,7 +360,7 @@ var Events = Backbone.Collection.extend({
             if (N <= 0) {
                 this.socket.emit("melted", this.melt.get("_id"), this.options.person_index);
                 if (this.active) {
-                    this.switch();
+                    this._switch();
                 }
             }else{
                 setTimeout(function () {
@@ -367,7 +369,7 @@ var Events = Backbone.Collection.extend({
             }
         },
 
-        switch: function () {
+        _switch: function () {
             var id = (this.options.person_index+1)%2;
             this.__navigate(null, "/melt/"+this.options.event_id+"/"+this.melt.get("_id")+"/"+id);
         },
@@ -381,7 +383,6 @@ var Events = Backbone.Collection.extend({
     var ThanksView = PageView.extend({
         template: Handlebars.compile($("#template-thanks").html())
     });
-
 
     var View = Backbone.View.extend({
 
@@ -443,11 +444,12 @@ var Events = Backbone.Collection.extend({
 
 //For iPhone and Andriod To remove Address bar when viewing website on Safari Mobile
 // When ready...
-window.addEventListener("load",function() {
+/*window.addEventListener("load",function() {
   // Set a timeout...
   setTimeout(function(){
    // Hide the address bar!
     window.scrollTo(0, 1);
    }, 0);
-});
+});*/
+
 
