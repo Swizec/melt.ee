@@ -347,7 +347,7 @@ var Events = Backbone.Collection.extend({
                                          }),
                                          me: me}));
 
-            this.counter(5);
+            this.counter(100);
         },
 
         counter: function (N) {
