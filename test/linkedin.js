@@ -52,7 +52,7 @@ describe("LinkedIn helper", function () {
     it("returns me", function (done) {
         
         api.me(function (err, me) {
-            me.should.have.keys(["firstName", "lastName", "id", "location", "publicProfileUrl"]);
+            me.should.have.keys(["firstName", "lastName", "id", "location", "publicProfileUrl", "pictureUrl"]);
 
             done();
         });
