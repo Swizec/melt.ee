@@ -58,7 +58,7 @@ exports.me = function (req, res) {
     var user = req.session.user_sess.id;
 
     my_data(user, function (err, result) {
-        res.send(result);
+        res.send(result[0]);
     });
 };
 
@@ -91,7 +91,10 @@ exports.save_my_topic = function (req, res) {
 };
 
 exports.ready_users = function (req, res) {
-    redis.get("ready_users", function (err, count) {
-        res.send({count: parseInt(count, 10)});
+    redis.smembers("ready_users", function (err, members) {
+        members = members || [];
+
+        res.send({count: members.length,
+                  users: members});
     });
 };

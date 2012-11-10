@@ -31,7 +31,7 @@ describe("LinkedIn helper", function () {
         api.connections(function (err, conns) {
             conns.length.should.be.above(5);
 
-            conns[0].should.have.keys(["firstName", "lastName", "location", "publicProfileUrl"]);
+            conns[0].should.have.keys(["id", "firstName", "lastName", "location", "publicProfileUrl"]);
 
             done();
         });

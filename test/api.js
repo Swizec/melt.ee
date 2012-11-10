@@ -36,12 +36,12 @@ describe('Helper APIs', function () {
                 .expect('Content-Type', /json/)
                 .end(function (err, res) {
 
-                    res.body[0].should.have.property('firstName');
-                    res.body[0].should.have.property('lastName');
-                    res.body[0].should.have.property('linkedin_id');
+                    res.body.should.have.property('firstName');
+                    res.body.should.have.property('lastName');
+                    res.body.should.have.property('linkedin_id');
 
                     for (var i=1; i<=3; i++) {
-                        res.body[0].should.have.property('topic'+i);
+                        res.body.should.have.property('topic'+i);
                     }
 
                     done();
