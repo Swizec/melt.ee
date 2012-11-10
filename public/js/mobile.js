@@ -327,6 +327,28 @@ var Events = Backbone.Collection.extend({
                                              return {s: topic};
                                          }),
                                          me: me}));
+
+            this.counter(5);
+        },
+
+        counter: function (N) {
+            var _this = this;
+
+            this.$el.find(".counter").html(N);
+            
+            if (N <= 0) {
+                this.switch();
+            }else{
+                setTimeout(function () {
+                    _this.counter(N-1);
+                }, 1000);
+            }
+        },
+
+        switch: function () {
+            var id = (this.options.person_id+1)%2;
+            console.log("switching to", id);
+            this.__navigate(null, "/melt/"+this.melt.get("_id")+"/"+id);
         }
     });
 
