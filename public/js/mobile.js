@@ -46,7 +46,7 @@ var Events = Backbone.Collection.extend({
             "waiting/:event_id": "waiting",
             "waiting/:event_id/:melt": "waiting",
             "handshake/:event_id/:melt": "handshake",
-            "melt/:event_id/:person": "melt",
+            "melt/:melt/:person": "melt",
             "thanks": "thanks"
         }
     });
@@ -307,12 +307,27 @@ var Events = Backbone.Collection.extend({
         },
 
         handshaked: function () {
-            console.log("hands were shaken");
+            this.__navigate(null, "/melt/"+this.melt.get("_id")+"/0");
         }
     });
 
     var MeltView = PageView.extend({
-        template: Handlebars.compile($("#template-melt").html())
+        template: Handlebars.compile($("#template-melt").html()),
+
+        render: function () {
+            var person = this.melt.get("users")[this.options.person_id],
+                other = this.melt.get("users")[(this.options.person_id+1)%2],
+                me = this.melt.get("me_index") == this.options.person_id;
+
+            this.$el.html(this.template({now: person,
+                                         other: other,
+                                         // handlebars can only handle array access
+                                         // if not last property on path
+                                         topics: person.topics.map(function (topic) {
+                                             return {s: topic};
+                                         }),
+                                         me: me}));
+        }
     });
 
     var ThanksView = PageView.extend({

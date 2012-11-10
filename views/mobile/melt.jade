@@ -1,22 +1,29 @@
 
 div.row
   div.span4
+    {{#if me}}
     p.lead.center OK, now please&nbsp;
       strong talk about your three topics
       &nbsp;and&nbsp;
-      strong Matej Rifelj
+      strong {{other.firstName}} {{other.lastName}}
       &nbsp;might ask questions:
+    {{else}}
+    p.lead.center Ok, now&nbsp;
+      strong {{now.firstName}} {{now.lastName}}
+      &nbsp;will talk about their topics and&nbsp;
+      strong you might ask questions:
+    {{/if}}
     hr
 
 div.row
   div.span4
      dl
        dt 1. Topic
-       dd Subtopic blah, blah blah
+       dd {{topics.0.s}}
        dt 2. Topic
-       dd blah blah blah blah
+       dd {{topics.1.s}}
        dt 3. Topic
-       dd blah blah blah
+       dd {{topics.2.s}}
      hr
 
 div.row
