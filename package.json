@@ -16,7 +16,7 @@
     "superagent": "*",
     "socket.io-client": "*",
     "redis": "*",
-    "underscore": "*"
+    "underscore": "*",
     "oauth": "*"
   },
   "scripts": {
