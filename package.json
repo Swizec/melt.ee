@@ -15,7 +15,9 @@
     "supertest": "*",
     "superagent": "*",
     "socket.io-client": "*",
-    "redis": "*"
+    "redis": "*",
+    "underscore": "*"
+    "oauth": "*"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
