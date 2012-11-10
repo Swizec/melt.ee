@@ -241,6 +241,7 @@ var Events = Backbone.Collection.extend({
             var _this = this;
 
             this.socket.on("melt", function (melt, me_index) {
+                console.log("GOT A MELT");
                 _.keys(melt).map(function (key) {
                     _this.melt.set(key, melt[key]);
                 });
@@ -307,6 +308,7 @@ var Events = Backbone.Collection.extend({
         },
 
         handshaked: function () {
+            console.log("handshaked!");
             this.__navigate(null, "/melt/"+this.melt.get("_id")+"/0");
         }
     });
@@ -314,7 +316,19 @@ var Events = Backbone.Collection.extend({
     var MeltView = PageView.extend({
         template: Handlebars.compile($("#template-melt").html()),
 
+        active: false,
+
+        initialize: function () {
+            var _this = this;
+
+            this.socket.on("finish melting", function () {
+                _this.finish();
+            });
+        },
+
         render: function () {
+            this.active = true;
+
             var person = this.melt.get("users")[this.options.person_id],
                 other = this.melt.get("users")[(this.options.person_id+1)%2],
                 me = this.melt.get("me_index") == this.options.person_id;
@@ -328,8 +342,6 @@ var Events = Backbone.Collection.extend({
                                          }),
                                          me: me}));
 
-            this.socket.emit("melting", this.melt.get("_id"), this.options.person_id);
-
             this.counter(5);
         },
 
@@ -339,7 +351,10 @@ var Events = Backbone.Collection.extend({
             this.$el.find(".counter").html(N);
             
             if (N <= 0) {
-                this.switch();
+                this.socket.emit("melted", this.melt.get("_id"), this.options.person_id);
+                if (this.active) {
+                    this.switch();
+                }
             }else{
                 setTimeout(function () {
                     _this.counter(N-1);
@@ -350,6 +365,11 @@ var Events = Backbone.Collection.extend({
         switch: function () {
             var id = (this.options.person_id+1)%2;
             this.__navigate(null, "/melt/"+this.melt.get("_id")+"/"+id);
+        },
+
+        finish: function () {
+            this.active = false;
+            this.__navigate(null, "/thanks");
         }
     });
 

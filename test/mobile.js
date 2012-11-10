@@ -553,8 +553,8 @@ describe("melting", function () {
 
                     client1.once("melt", function (melt, me_index) {
                         
-                        client1.emit("melting", melt._id, 0, function () {
-                            client1.emit("melting", melt._id, 1);
+                        client1.emit("melted", melt._id, 0, function () {
+                            client1.emit("melted", melt._id, 1);
                         });
 
                         client1.once("finish melting", function () {
@@ -565,8 +565,8 @@ describe("melting", function () {
 
                     client2.once("melt", function (melt, me_index) {
                         
-                        client2.emit("melting", melt._id, 0, function() {
-                            client2.emit("melting", melt._id, 1);
+                        client2.emit("melted", melt._id, 0, function() {
+                            client2.emit("melted", melt._id, 1);
                         });
 
                         client2.once("finish melting", function () {
