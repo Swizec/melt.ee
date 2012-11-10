@@ -102,7 +102,7 @@ describe("melting", function () {
                 .sadd("free_spots", 2)
                 .sadd("free_spots", 3)
                 .exec(function (err) {
-                    models.melts.remove(function () {
+                    models.melts.remove({}, function (err) {
                         db.create(user1, function () {
                             db.create(user2, function () {
                                 db.create(user3, function () {
@@ -110,14 +110,16 @@ describe("melting", function () {
                                 });
                             });
                         });
-                    });
+                    });            
                 });
         });
         
         afterEach(function (done) {
             db.remove({linkedin_id: {$in: ["test_1", "test_2", "test_3"]}}, 
                       function (err) {
-                          done();
+                          models.melts.remove({}, function (err) {
+                              done();
+                          });
                       });
         });
         
@@ -283,6 +285,47 @@ describe("melting", function () {
 
                             done();
                         });
+                    });
+            });
+
+            it("doesn't match ex melters", function (done) {
+                redis.multi()
+                    .sadd("ready_users", user1._id)
+                    .sadd("ready_users", user2._id)
+                    .exec(function () {
+
+                        melter.create_melt(user1, user2, function (err, melt) {
+                            melter.finish_melt(melt, function () {
+                                melter.find_matches(user1, function (err, matches) {
+                                    matches.length.should.equal(0);
+                                    
+                                    done();
+                                });
+
+                            });
+                        });
+
+                    });
+
+            });
+
+            it("gets past melts", function (done) {
+                
+                redis.multi()
+                    .sadd("ready_users", user1._id)
+                    .sadd("ready_users", user2._id)
+                    .exec(function () {
+
+                        melter.create_melt(user1, user2, function (err, melt) {
+                            melter.finish_melt(melt, function () {
+                                melter.past_melts(user1, function (err, melts) {
+                                    melts.length.should.equal(1);
+                                    
+                                    done();
+                                });
+                            });
+                        });
+
                     });
             });
 
